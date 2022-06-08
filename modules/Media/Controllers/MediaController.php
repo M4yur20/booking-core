@@ -174,4 +174,27 @@ class MediaController extends Controller
 
         abort(404);
     }
+
+    public function editImage(Request $request){
+        $validate = [
+            'image'     => 'required',
+            'image_id'  => 'required',
+        ];
+        $request->validate($validate);
+
+        if (!Auth::user()->hasPermissionTo("media_upload")) {
+            $result = [
+                'message' => __('403'),
+                'status'=>0
+            ];
+            return $result;
+        }
+
+        $image_id = $request->input('image_id');
+        $image_data = $request->input('image');
+
+        $file = MediaFile::find($image_id);
+        $res = $file->editImage($image_data);
+        return $this->sendSuccess($res);
+    }
 }

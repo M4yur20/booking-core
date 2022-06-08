@@ -31,16 +31,16 @@
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label">{{__("Min day before booking")}}</label>
+                        <label class="control-label">{{__("Minimum advance reservations")}}</label>
                         <input type="number" name="min_day_before_booking" class="form-control" value="{{$row->min_day_before_booking}}" placeholder="{{__("Ex: 3")}}">
                         <i>{{ __("Leave blank if you dont need to use the min day option") }}</i>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="control-label">{{__("Min day stays")}}</label>
+                        <label class="control-label">{{__("Minimum day stay requirements")}}</label>
                         <input type="number" name="min_day_stays" class="form-control" value="{{$row->min_day_stays}}" placeholder="{{__("Ex: 2")}}">
-                        <i>{{ __("Leave blank if you dont need to use the min day stays option") }}</i>
+                        <i>{{ __("Leave blank if you dont need to set minimum day stay option") }}</i>
                     </div>
                 </div>
             </div>

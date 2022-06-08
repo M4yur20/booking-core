@@ -14,8 +14,9 @@ class ModuleProvider extends ModuleServiceProvider
 	public function register()
 	{
 		$this->app->register(SmsServiceProvider::class);
+        $this->app->register(RouterServiceProvider::class);
 
-	}
+    }
 	public function boot(){
 		Event::listen(BookingCreatedEvent::class,SendSmsBookingListen::class);
 		Event::listen(BookingUpdatedEvent::class,SendSmsUpdateBookingListen::class);

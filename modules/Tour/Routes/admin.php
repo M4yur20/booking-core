@@ -8,12 +8,13 @@ Route::post('/store/{id}','TourController@store')->name('tour.admin.store');
 Route::get('/getForSelect2','TourController@getForSelect2')->name('tour.admin.getForSelect2');
 Route::post('/bulkEdit','TourController@bulkEdit')->name('tour.admin.bulkEdit');
 Route::get('/recovery','TourController@recovery')->name('tour.admin.recovery');
+Route::get('/getForSelect2','TourController@getForSelect2')->name('tour.admin.getForSelect2');
 
 Route::get('/category','CategoryController@index')->name('tour.admin.category.index');
 Route::get('/category/edit/{id}','CategoryController@edit')->name('tour.admin.category.edit');
 Route::post('/category/store/{id}','CategoryController@store')->name('tour.admin.category.store');
 Route::get('/category/getForSelect2','CategoryController@getForSelect2')->name('tour.admin.category.term.getForSelect2');
-
+Route::post('/category/bulkEdit','CategoryController@bulkEdit')->name('tour.admin.category.bulkEdit');
 
 Route::group(['prefix'=>'attribute'],function(){
     Route::get('/','AttributeController@index')->name('tour.admin.attribute.index');

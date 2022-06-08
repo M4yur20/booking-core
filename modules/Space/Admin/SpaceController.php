@@ -369,4 +369,38 @@ class SpaceController extends AdminController
 
 
     }
+
+    public function getForSelect2(Request $request)
+    {
+        $pre_selected = $request->query('pre_selected');
+        $selected = $request->query('selected');
+        if ($pre_selected && $selected) {
+            if (is_array($selected)) {
+                $items = $this->space::select('id', 'title as text')->whereIn('id', $selected)->take(50)->get();
+                return $this->sendSuccess([
+                    'items' => $items
+                ]);
+            } else {
+                $item = $this->space::find($selected);
+            }
+            if (empty($item)) {
+                return $this->sendSuccess([
+                    'text' => ''
+                ]);
+            } else {
+                return $this->sendSuccess([
+                    'text' => $item->name
+                ]);
+            }
+        }
+        $q = $request->query('q');
+        $query = $this->space::select('id', 'title as text')->where("status", "publish");
+        if ($q) {
+            $query->where('title', 'like', '%' . $q . '%');
+        }
+        $res = $query->orderBy('id', 'desc')->limit(20)->get();
+        return $this->sendSuccess([
+            'results' => $res
+        ]);
+    }
 }

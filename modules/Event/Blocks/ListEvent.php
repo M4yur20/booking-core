@@ -94,7 +94,24 @@ class ListEvent extends BaseBlock
                     'label'=>__("Only featured items?"),
                     'id'=> "is_featured",
                     'default'=>true
-                ]
+                ],
+                [
+                    'id'           => 'custom_ids',
+                    'type'         => 'select2',
+                    'label'        => __('List by IDs'),
+                    'select2'      => [
+                        'ajax'        => [
+                            'url'      => route('event.admin.getForSelect2'),
+                            'dataType' => 'json'
+                        ],
+                        'width'       => '100%',
+                        'multiple'    => "true",
+                        'placeholder' => __('-- Select --')
+                    ],
+                    'pre_selected' => route('event.admin.getForSelect2', [
+                        'pre_selected' => 1
+                    ])
+                ],
             ],
             'category'=>__("Service Event")
         ]);
@@ -140,12 +157,13 @@ class ListEvent extends BaseBlock
                 });
             }
         }
-
         if(!empty($model['is_featured']))
         {
-            $model_event->where('is_featured',1);
+            $model_event->where('bravo_events.is_featured',1);
         }
-
+        if (!empty($model['custom_ids'])) {
+            $model_event->whereIn("bravo_events.id", $model['custom_ids']);
+        }
         $model_event->orderBy("bravo_events.".$model['order'], $model['order_by']);
         $model_event->where("bravo_events.status", "publish");
         $model_event->with('location');

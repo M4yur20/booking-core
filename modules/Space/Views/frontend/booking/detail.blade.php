@@ -95,7 +95,6 @@
 
             </ul>
         </div>
-        {{--@include('Booking::frontend/booking/checkout-coupon')--}}
         <div class="review-section total-review">
             <ul class="review-list">
                 @php
@@ -164,6 +163,7 @@
                         </li>
                     @endforeach
                 @endif
+                @includeIf('Coupon::frontend/booking/checkout-coupon')
                 <li class="final-total d-block">
                     <div class="d-flex justify-content-between">
                         <div class="label">{{__("Total:")}}</div>

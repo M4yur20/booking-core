@@ -7,7 +7,7 @@ Route::group(['prefix'=>config('booking.booking_route_prefix')],function(){
     Route::get('/confirm/{gateway}','BookingController@confirmPayment');
     Route::get('/cancel/{gateway}','BookingController@cancelPayment');
     Route::get('/{code}','BookingController@detail');
-    Route::get('/{code}/checkout','BookingController@checkout');
+    Route::get('/{code}/checkout','BookingController@checkout')->name('booking.checkout');
     Route::get('/{code}/check-status','BookingController@checkStatusCheckout');
 
     //ical
@@ -23,16 +23,3 @@ Route::group(['prefix'=>'gateway'],function(){
     Route::get('/cancel/{gateway}','NormalCheckoutController@cancelPayment')->name('gateway.cancel');
     Route::get('/info','NormalCheckoutController@showInfo')->name('gateway.info');
 });
-
-Route::get('test-event',function (){
-    iF(Auth::check()){
-        $user = Auth::user();
-        event(new \Modules\Booking\Events\TestEvent($user));
-    }else{
-        return redirect(url('login'));
-    }
-
-});
-
-Route::get('stripe/go/{code}','StripeController@go')->name('stripe.go');
-Route::post('stripe/webhooks','StripeController@webhooks')->name('stripe.webhooks');

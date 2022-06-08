@@ -21,7 +21,20 @@ class FileHelper
             1024,
             1024
         ],
+        'max_large' => [
+            2500,
+            2500
+        ],
     ];
+
+
+    public static function list_size(){
+        $sizes = [];
+        foreach (self::$defaultSize as $size){
+            $sizes[] = $size[0];
+        }
+        return $sizes;
+    }
 
     public static function url($fileId, $size = 'medium',$resize = true)
     {
@@ -131,7 +144,7 @@ class FileHelper
     {
 
         if(!empty($oldValue))
-        $file = (new MediaFile())->findById($oldValue);
+            $file = (new MediaFile())->findById($oldValue);
         ob_start();
         ?>
         <div class="dungdt-upload-box dungdt-upload-box-normal <?php if (!empty($file)) echo 'active' ?>" data-val="<?php echo $oldValue ?>">
@@ -194,11 +207,15 @@ class FileHelper
             </div>
             <div class="attach-demo" title="Change file">
                 <?php if (!empty($file)) {
-                    printf('<img src="%s" class="image-responsive">', FileHelper::url($oldValue, 'thumb'));
+                    printf('<img src="%s" class="image-responsive">', FileHelper::url($oldValue, 'thumb').'?time='.strtotime('now'));
                 } ?>
             </div>
             <div class="upload-actions justify-content-between" v-show="value">
-                <span></span>
+                <?php
+                $oldPath = '';
+                if (!empty($file)){$oldPath = $file->getEditPath();}
+                ?>
+                <a class="edit-img btn btn-sm btn-primary edit-single" data-file="<?php echo $oldPath ?>"><i class="fa fa-edit"></i></a>
                 <a class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
             </div>
         </div>
@@ -208,18 +225,27 @@ class FileHelper
 
     public static function fieldGalleryUpload($inputId = '', $oldValue = '')
     {
-
         $oldIds = $oldValue ? explode(',', $oldValue) : [];
         ob_start();
         ?>
-        <div class="dungdt-upload-multiple <?php if (!empty($file))
-            echo 'active' ?>" data-val="<?php echo $oldValue ?>">
+        <div class="dungdt-upload-multiple <?php if (!empty($file)) echo 'active' ?>" data-val="<?php echo $oldValue ?>">
             <div class="attach-demo d-flex">
                 <?php
                 foreach ($oldIds as $id) {
                     $file = (new MediaFile())->findById($id);
                     if (!empty($file)) {
-                        printf('<div class="image-item"><div class="inner"><span class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></span><img src="%s" class="image-responsive"></div></div>', FileHelper::url($file, 'thumb'));
+                        ?>
+                        <div class="image-item">
+                            <div class="inner">
+                                <?php
+                                $oldPath = '';
+                                if (!empty($file)){$oldPath = $file->getEditPath();}
+                                ?>
+                                <a class="edit-img btn btn-sm btn-primary edit-multiple" data-id="<?php echo $id ?>"  data-file="<?php echo $oldPath ?>"><i class="fa fa-edit"></i></a>
+                                <span class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></span><img src="<?php echo FileHelper::url($file, 'thumb').'?time='.strtotime('now') ?>" class="image-responsive image-preview">
+                            </div>
+                        </div>
+                        <?php
                     }
                 }
                 ?>

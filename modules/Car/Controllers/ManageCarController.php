@@ -260,6 +260,7 @@ class ManageCarController extends FrontendController
                 $query->forceDelete();
             }
         }else {
+            $query = $this->carClass::where("create_user", $user_id)->where("id", $id)->first();
             if (!empty($query)) {
                 $query->delete();
                 event(new UpdatedServiceEvent($query));

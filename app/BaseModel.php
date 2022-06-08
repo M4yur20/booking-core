@@ -351,7 +351,7 @@ class BaseModel extends Model
         }
     }
 
-    public function check_enable_review_after_booking(){
+    public function review_after_booking(){
 
     }
 

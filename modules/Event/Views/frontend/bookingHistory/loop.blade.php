@@ -41,5 +41,10 @@
         <a href="{{route('user.booking.ticket',['code'=>$booking->code])}}" class="btn btn-xs btn-primary btn-info-booking open-new-window mt-1" onclick="window.open(this.href); return false;">
             <i class="fa fa-print"></i>{{__("Print Ticket")}}
         </a>
+        @if($booking->status == 'unpaid')
+            <a href="{{route('booking.checkout',['code'=>$booking->code])}}" class="btn btn-xs btn-primary btn-info-booking open-new-window mt-1">
+                {{__("Pay now")}}
+            </a>
+        @endif
     </td>
 </tr>

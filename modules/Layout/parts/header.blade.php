@@ -92,16 +92,19 @@
                             <i class="icofont-user-suited"></i> {{__("Hi, :Name",['name'=>Auth::user()->getDisplayName()])}}
                         </a>
                     </li>
+                    @if(Auth::user()->hasPermissionTo('dashboard_vendor_access'))
+                        <li><a href="{{route('vendor.dashboard')}}"><i class="icon ion-md-analytics"></i> {{__("Vendor Dashboard")}}</a></li>
+                    @endif
+                    @if(Auth::user()->hasPermissionTo('dashboard_access'))
+                        <li>
+                            <a href="{{url('/admin')}}"><i class="icon ion-ios-ribbon"></i> {{__("Admin Dashboard")}}</a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{route('user.profile.index')}}">
                             <i class="icon ion-md-construct"></i> {{__("My profile")}}
                         </a>
                     </li>
-                    @if(Auth::user()->hasPermissionTo('dashboard_access'))
-                        <li>
-                            <a href="{{url('/admin')}}"><i class="icon ion-ios-ribbon"></i> {{__("Dashboard")}}</a>
-                        </li>
-                    @endif
                     <li>
                         <a  href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
                             <i class="fa fa-sign-out"></i> {{__('Logout')}}

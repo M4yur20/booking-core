@@ -29,7 +29,28 @@
                         </select>
                     </div>
                 </div>
-                @endif
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" >{{__("Location Search Style")}}</label>
+                            <div class="form-controls">
+                                <select name="space_location_search_style" class="form-control">
+                                    <option {{ ($settings['space_location_search_style'] ?? '') == 'normal' ? 'selected' : ''  }}      value="normal">{{__("Normal")}}</option>
+                                    <option {{ ($settings['space_location_search_style'] ?? '') == 'autocomplete' ? 'selected' : '' }} value="autocomplete">{{__('Autocomplete from locations')}}</option>
+                                    <option {{ ($settings['space_location_search_style'] ?? '') == 'autocompletePlace' ? 'selected' : '' }} value="autocompletePlace">{{__('Autocomplete from Gmap Place')}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" >{{__("Limit item per Page")}}</label>
+                            <div class="form-controls">
+                                <input type="number" min="1" name="space_page_limit_item" placeholder="{{ __("Default: 9") }}" value="{{setting_item_with_lang('space_page_limit_item',request()->query('lang'), 9)}}" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="" >{{__("Layout Map Option")}}</label>
                     <div class="form-controls">
@@ -39,24 +60,30 @@
                         </select>
                     </div>
                 </div>
-                @if(is_default_lang())
-                <div class="form-group">
-                    <label class="" >{{__("Limit item per Page")}}</label>
-                    <div class="form-controls">
-                        <input type="number" min="1" name="space_page_limit_item" placeholder="{{ __("Default: 9") }}" value="{{setting_item_with_lang('space_page_limit_item',request()->query('lang'), 9)}}" class="form-control">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>{{__("Map Lat Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="space_map_lat_default" value="{{$settings['space_map_lat_default'] ?? ''}}" class="form-control" placeholder="21.030513">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>{{__("Map Lng Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="space_map_lng_default" value="{{$settings['space_map_lng_default'] ?? ''}}" class="form-control" placeholder="105.840565">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>{{__("Map Zoom Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="space_map_zoom_default" value="{{$settings['space_map_zoom_default'] ?? ''}}" class="form-control" placeholder="13">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1">
+                        <i> {{ __('Get lat - lng in here') }} <a href="https://www.latlong.net" target="_blank">https://www.latlong.net</a></i>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="" >{{__("Location Search Style")}}</label>
-                    <div class="form-controls">
-                        <select name="space_location_search_style" class="form-control">
-                            <option {{ ($settings['space_location_search_style'] ?? '') == 'normal' ? 'selected' : ''  }}      value="normal">{{__("Normal")}}</option>
-                            <option {{ ($settings['space_location_search_style'] ?? '') == 'autocomplete' ? 'selected' : '' }} value="autocomplete">{{__('Autocomplete from locations')}}</option>
-                            <option {{ ($settings['space_location_search_style'] ?? '') == 'autocompletePlace' ? 'selected' : '' }} value="autocompletePlace">{{__('Autocomplete from Gmap Place')}}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
+                <div class="form-group mt-3">
                     <label class="" >{{__("Icon Marker in Map")}}</label>
                     <div class="form-controls form-group-image">
                         {!! \Modules\Media\Helpers\FileHelper::fieldUpload('space_icon_marker_map',$settings['space_icon_marker_map'] ?? "") !!}
@@ -167,7 +194,7 @@
                         </div>
                     </div>
                     <div class="form-group" data-condition="space_enable_review:is(1),space_enable_review_after_booking:is(1)">
-                        <label class="" >{{__("Allow Review after making Completed Booking?")}}</label>
+                        <label>{{__("Allow review after making Completed Booking?")}}</label>
                         <div class="form-controls">
                             @php
                                 $status = config('booking.statuses');
@@ -181,6 +208,7 @@
                                 @endforeach
                             </div>
                             <small class="form-text text-muted">{{__("Pick to the Booking Status, that allows reviews after booking")}}</small>
+                            <small class="form-text text-muted">{{__("Leave blank if you allow writing the review with all booking status")}}</small>
                         </div>
                     </div>
                     <div class="form-group" data-condition="space_enable_review:is(1)">

@@ -235,47 +235,22 @@
                     $total += $flight_seat['number'] * $flight_seat['price'];
                 }
             }
+
             //Buyer Fees for Admin
             $total_before_fees = $total;
-            $list_buyer_fees = setting_item('flight_booking_buyer_fees');
             $total_buyer_fee = 0;
-            if (!empty($list_buyer_fees)) {
-                $lists = json_decode($list_buyer_fees, true);
-                foreach ($lists as $item) {
-                    //for Fixed
-                    $fee_price = $item['price'];
-                    // for Percent
-                    if (!empty($item['unit']) and $item['unit'] == "percent") {
-                        $fee_price = ($total_before_fees / 100) * $item['price'];
-                    }
-                    if (!empty($item['per_person']) and $item['per_person'] == "on") {
-                        $total_buyer_fee += $fee_price * $total_guests;
-                    } else {
-                        $total_buyer_fee += $fee_price;
-                    }
-                }
+            if (!empty($list_buyer_fees = setting_item('flight_booking_buyer_fees'))) {
+                $list_fees = json_decode($list_buyer_fees, true);
+                $total_buyer_fee = $this->calculateServiceFees($list_fees , $total_before_fees , $total_guests);
                 $total += $total_buyer_fee;
             }
 
             //Service Fees for Vendor
             $total_service_fee = 0;
-            if (!empty($this->enable_service_fee) and !empty($list_service_fee = $this->service_fee)) {
-                foreach ($list_service_fee as $item) {
-                    //for Fixed
-                    $serice_fee_price = $item['price'];
-                    // for Percent
-                    if (!empty($item['unit']) and $item['unit'] == "percent") {
-                        $serice_fee_price = ($total_before_fees / 100) * $item['price'];
-                    }
-                    if (!empty($item['per_person']) and $item['per_person'] == "on") {
-                        $total_service_fee += $serice_fee_price * $total_guests;
-                    } else {
-                        $total_service_fee += $serice_fee_price;
-                    }
-                }
+            if(!empty($this->enable_service_fee) and !empty($list_service_fee = $this->service_fee)){
+                $total_service_fee = $this->calculateServiceFees($list_service_fee , $total_before_fees , $total_guests);
                 $total += $total_service_fee;
             }
-
 
             $booking = new $this->bookingClass();
             $booking->status = 'draft';
@@ -292,6 +267,7 @@
             $booking->vendor_service_fee = $list_service_fee ?? '';
             $booking->buyer_fees = $list_buyer_fees ?? '';
             $booking->total_before_fees = $total_before_fees;
+            $booking->total_before_discount = $total_before_fees;
 
             $booking->calculateCommission();
 
@@ -558,36 +534,22 @@
             return setting_item("flight_review_approved", 0);
         }
 
-        public function check_enable_review_after_booking()
-        {
-            $option = setting_item("flight_enable_review_after_booking", 0);
-            if ($option) {
-                $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id()) ?? 0;
-                $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id()) ?? 0;
-                if ($number_review >= $number_booking) {
-                    return false;
-                }
-            }
-            return true;
+        public function review_after_booking(){
+            return setting_item("flight_enable_review_after_booking", 0);
         }
 
-        public function check_allow_review_after_making_completed_booking()
+        public function count_remain_review()
         {
+            $status_making_completed_booking = [];
             $options = setting_item("flight_allow_review_after_making_completed_booking", false);
             if (!empty($options)) {
-                $status = json_decode($options);
-                $booking = $this->bookingClass::select("status")
-                    ->where("object_id", $this->id)
-                    ->where("object_model", $this->type)
-                    ->where("customer_id", Auth::id())
-                    ->orderBy("id", "desc")
-                    ->first();
-                $booking_status = $booking->status ?? false;
-                if (!in_array($booking_status, $status)) {
-                    return false;
-                }
+                $status_making_completed_booking = json_decode($options);
             }
-            return true;
+            $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id(), false, $this->type) ?? 0;
+            $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id(),$status_making_completed_booking) ?? 0;
+            $number = $number_booking - $number_review;
+            if($number < 0) $number = 0;
+            return $number;
         }
 
         public static function getReviewStats()
@@ -876,7 +838,7 @@
             }
 
             $terms = $request->query('terms');
-            if (is_array($terms) && !empty($terms)) {
+            if (is_array($terms) and !empty($terms = array_filter($terms))) {
                 $model_flight->join('bc_flight_term as tt', 'tt.target_id', "bc_flight.id")->whereIn('tt.term_id', $terms);
             }
 
@@ -991,32 +953,17 @@
 
         public function dataForApi($forSingle = false)
         {
-            $data = parent::dataForApi($forSingle);
-            $data['max_guests'] = $this->max_guests;
-            $data['bed'] = $this->bed;
-            $data['bathroom'] = $this->bathroom;
-            $data['square'] = $this->square;
-            if ($forSingle) {
-                $data['review_score'] = $this->getReviewDataAttribute();
-                $data['review_stats'] = $this->getReviewStats();
-                $data['review_lists'] = $this->getReviewList();
-                $data['faqs'] = $this->faqs;
-                $data['is_instant'] = $this->is_instant;
-                $data['allow_children'] = $this->allow_children;
-                $data['allow_infant'] = $this->allow_infant;
-                $data['discount_by_days'] = $this->discount_by_days;
-                $data['default_state'] = $this->default_state;
-                $data['booking_fee'] = setting_item_array('flight_booking_buyer_fees');
-                if (!empty($location_id = $this->location_id)) {
-                    $related = parent::query()->where('location_id', $location_id)->where("status", "publish")->take(4)->whereNotIn('id', [$this->id])->with(['location', 'translations', 'hasWishList'])->get();
-                    $data['related'] = $related->map(function ($related) {
-                            return $related->dataForApi();
-                        }) ?? null;
-                }
-                $data['terms'] = Terms::getTermsByIdForAPI($this->terms->pluck('term_id'));
-            } else {
-                $data['review_score'] = $this->getScoreReview();
-            }
+            $data = [
+                'id'               => $this->id,
+                'title'            => $this->title,
+                'price'            => $this->price,
+                'sale_price'       => $this->sale_price,
+                'discount_percent' => $this->discount_percent ?? null,
+                'image'            => get_file_url($this->image_id),
+                'content'          => $this->content,
+                'location'         => Location::selectRaw("id,name")->find($this->location_id) ?? null,
+                'is_featured'      => $this->is_featured ?? null,
+            ];
             return $data;
         }
 
@@ -1037,19 +984,26 @@
                     "max_price" => ceil(Currency::convertPrice($min_max_price[1])),
                 ],
                 [
-                    "title"    => __("Review Score"),
-                    "field"    => "review_score",
-                    "position" => "2",
-                    "min"      => "1",
-                    "max"      => "5",
-                ],
-                [
                     "title"    => __("Attributes"),
                     "field"    => "terms",
                     "position" => "3",
                     "data"     => Attributes::getAllAttributesForApi("flight")
                 ]
             ];
+        }
+
+        static public function getFormSearch()
+        {
+            $search_fields = setting_item_array('flight_search_fields');
+            $search_fields = array_values(\Illuminate\Support\Arr::sort($search_fields, function ($value) {
+                return $value['position'] ?? 0;
+            }));
+            foreach ( $search_fields as &$item){
+                if($item['field'] == 'seat_type'){
+                    $item['seat_types'] = SeatType::selectRaw('id,name,code')->get()->toArray();
+                }
+            }
+            return $search_fields;
         }
 
         public static function getBookingType()

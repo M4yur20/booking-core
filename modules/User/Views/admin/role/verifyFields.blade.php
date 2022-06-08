@@ -24,7 +24,7 @@
         
         <div class="row">
             <div class="col-md-4">
-                <form action="{{route('user.admin.role.verifyFieldsStore')}}" class="needs-validation" novalidate>
+                <form method="post" action="{{route('user.admin.role.verifyFieldsStore')}}" class="needs-validation" novalidate>
                     @csrf
                 <div class="panel">
                     <div class="panel-title"><strong>{{__("Add new field")}}</strong></div>

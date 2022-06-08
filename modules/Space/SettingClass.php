@@ -51,6 +51,10 @@ class SettingClass extends BaseSettingsClass
                     'space_layout_map_option',
                     'space_icon_marker_map',
                     'space_booking_type',
+
+                    'space_map_lat_default',
+                    'space_map_lng_default',
+                    'space_map_zoom_default',
                 ],
                 'html_keys'=>[
 

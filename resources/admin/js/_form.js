@@ -94,17 +94,18 @@ import BookingCoreAdaterPlugin from './ckeditor/uploadAdapter'
 
     $(document).on('click','.dungdt-upload-box-normal .btn-field-upload,.dungdt-upload-box-normal .attach-demo',function () {
         let p = $(this).closest('.dungdt-upload-box');
-
         uploaderModal.show({
-            multiple:false,
-            file_type:'image',
-            onSelect:function (files) {
+            multiple: false,
+            file_type: 'image',
+            onSelect: function (files) {
+                let path = (files[0].edit_path !== undefined) ? files[0].edit_path : files[0].max_large_size;
                 p.addClass('active');
-                p.find('.attach-demo').html('<img src="'+files[0].thumb_size+'"/>');
+                p.find('.attach-demo').html('<img src="' + files[0].thumb_size + '"/>');
+                p.attr('data-val',files[0].id);
                 p.find('input').val(files[0].id);
+                p.find('.edit-img').attr('data-file', path);
             },
         });
-
     });
 
     $(document).on('click','.dungdt-upload-box-normal .delete',function (e) {
@@ -114,23 +115,76 @@ import BookingCoreAdaterPlugin from './ckeditor/uploadAdapter'
         p.removeClass("active");
     });
 
+    $(document).on('click', '.dungdt-upload-box-normal .edit-img, .dungdt-upload-multiple .edit-img, .show_avatar .edit-img', function (e) {
+        e.preventDefault();
+        let $this = $(this);
+        let image_path = $this.attr('data-file');
+        let edit_type = ($this.hasClass('edit-multiple')) ? 'multiple' : 'single';
+        let p = (edit_type === 'multiple') ? $this.closest('.dungdt-upload-multiple') : $this.closest('.dungdt-upload-box');
+        let image_id = (edit_type === 'multiple') ? $this.attr('data-id') : p.attr('data-val');
+        let config = {
+            language: image_editer.language,
+            translations: image_editer.translations,
+            reduceBeforeEdit : {
+                mode: 'manual',
+                widthLimit: 2500,
+                heightLimit: 2500
+            }
+        };
+
+        let callback = {
+            onOpen: () => {
+
+            },
+            onBeforeComplete: (props) => {
+                return false;
+            },
+            onComplete: function (url){
+                var canvas = url.canvas.toDataURL('image/jpeg');
+
+                if (edit_type === 'multiple'){
+                    $this.closest('.image-item').find('.image-preview').attr('src',canvas);
+                } else {
+                    p.find('.attach-demo').html('<img src="' + canvas + '" alt="image-responsive" style="max-width: 150px">');
+                }
+
+                $.ajax({
+                    url: bookingCore.url + '/media/edit_image',
+                    method: 'POST',
+                    dataType: 'JSON',
+                    data:{
+                        image: canvas,
+                        image_id: image_id,
+                    },
+                    success:function (result) {
+                        console.log(result);
+                    }
+                });
+            }
+        };
+        let ImageEditor = new FilerobotImageEditor(config, callback);
+        ImageEditor.open(image_path);
+    });
+
     $('.dungdt-upload-multiple').find('.btn-field-upload').click(function () {
         let p = $(this).closest('.dungdt-upload-multiple');
-
         uploaderModal.show({
-            multiple:true,
-            file_type:'image',
-            onSelect:function (files) {
-                console.log(files);
-                if(typeof files !='undefined' && files.length)
-                {
+            multiple: true,
+            file_type: 'image',
+            onSelect: function (files) {
+                if (typeof files != 'undefined' && files.length) {
                     var ids = [];
                     var html = '';
                     p.addClass('active');
-
-                    for(var i = 0 ; i < files.length; i++){
+                    for (var i = 0; i < files.length; i++) {
+                        let path = (files[i].edit_path !== undefined) ? files[i].edit_path : files[i].max_large_size;
                         ids.push(files[i].id);
-                        html+='<div class="image-item"><div class="inner"><span class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></span><img src="'+files[i].thumb_size+'"/></div></div>'
+                        html += '<div class="image-item">' +
+                            '<div class="inner">';
+                        html += '<a class="edit-img btn btn-sm btn-primary edit-multiple" data-id="'+files[i].id+'" data-file="'+path+'"><i class="fa fa-edit"></i></a>'
+                        html += '<span class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></span><div class="img-preview"><img class="image-responsive image-preview w-100" src="' + files[i].thumb_size + '"/></div>' +
+                            '</div>' +
+                            '</div>'
                     }
                     p.find('.attach-demo').append(html);
                     var old = p.find('input').val().split(',');
@@ -139,7 +193,6 @@ import BookingCoreAdaterPlugin from './ckeditor/uploadAdapter'
 
             },
         });
-
     });
 
     $('.dungdt-upload-multiple').on('click','.image-item .delete',function () {

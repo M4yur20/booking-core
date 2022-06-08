@@ -321,8 +321,11 @@ class MediaController extends Controller
                     $file->thumb_size = get_file_url($file,'thumb');
                     $file->full_size = get_file_url($file,'full',false);
                     $file->medium_size = get_file_url($file,'medium',false);
+                    $file->max_large_size = get_file_url($file,'max_large');
                 }
-
+                if (!empty($file->getEditPath())){
+                    $file->edit_path = $file->getEditPath();
+                }
             }
         }
         return $this->sendSuccess([
@@ -356,6 +359,9 @@ class MediaController extends Controller
     }
 
     public function removeFiles(Request $request){
+        if(is_demo_mode()){
+            return $this->sendError(__("Can not remove!"));
+        }
         $file_ids = $request->input('file_ids');
         if(empty($file_ids)){
             return $this->sendError(__("Please select file"));
@@ -388,5 +394,28 @@ class MediaController extends Controller
             return $this->sendSuccess([],__("Delete the file success!"));
         }
         return $this->sendError(__("File not found!"));
+    }
+
+    public function editImage(Request $request){
+        $validate = [
+            'image'     => 'required',
+            'image_id'  => 'required',
+        ];
+        $request->validate($validate);
+
+        if (!Auth::user()->hasPermissionTo("media_upload")) {
+            $result = [
+                'message' => __('403'),
+                'status'=>0
+            ];
+            return $result;
+        }
+
+        $image_id = $request->input('image_id');
+        $image_data = $request->input('image');
+
+        $file = MediaFile::find($image_id);
+        $res = $file->editImage($image_data);
+        return $this->sendSuccess($res);
     }
 }

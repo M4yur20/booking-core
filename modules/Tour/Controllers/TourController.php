@@ -61,7 +61,7 @@
                 'tour_location' => $this->locationClass::where('status', 'publish')->with(['translations'])->limit($limit_location)->get()->toTree(),
                 'tour_min_max_price' => $this->tourClass::getMinMaxPrice(),
                 'markers' => $markers,
-                "blank" => 1,
+                "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
                 "seo_meta" => $this->tourClass::getSeoMetaForPageList()
             ];
             $layout = setting_item("tour_layout_search", 'normal');

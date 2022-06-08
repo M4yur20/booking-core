@@ -43,8 +43,13 @@ class BookingController extends \Modules\Booking\Controllers\BookingController
             'booking_types'=>$this->getTypes(),
             'country'=>get_country_lists(),
             'app_layout'=>$template? json_decode($template->content,true) : [],
-            'is_enable_guest_checkout'=>(int)is_enable_guest_checkout()
+            'is_enable_guest_checkout'=>(int)is_enable_guest_checkout(),
+            'service_search_forms' => []
         ];
+        $all_service = get_bookable_services();
+        foreach ( $all_service as $key => $class){
+            $res['service_search_forms'][$key] = call_user_func([$class,'getFormSearch'],request());
+        }
         return $this->sendSuccess($res);
     }
 

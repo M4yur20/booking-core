@@ -118,7 +118,24 @@ class ListTours extends BaseBlock
                     'label'=>__("Only featured items?"),
                     'id'=> "is_featured",
                     'default'=>true
-                ]
+                ],
+                [
+                    'id'           => 'custom_ids',
+                    'type'         => 'select2',
+                    'label'        => __('List by IDs'),
+                    'select2'      => [
+                        'ajax'     => [
+                            'url'      => route('tour.admin.getForSelect2'),
+                            'dataType' => 'json'
+                        ],
+                        'width'    => '100%',
+                        'multiple' => "true",
+                        'placeholder' => __('-- Select --')
+                    ],
+                    'pre_selected' => route('tour.admin.getForSelect2', [
+                        'pre_selected' => 1
+                    ])
+                ],
             ],
             'category'=>__("Service Tour")
         ]);
@@ -185,7 +202,10 @@ class ListTours extends BaseBlock
         }
         if(!empty($model['is_featured']))
         {
-            $model_Tour->where('is_featured',1);
+            $model_Tour->where('bravo_tours.is_featured',1);
+        }
+        if(!empty( $model['custom_ids'] )){
+            $model_Tour->whereIn("bravo_tours.id",$model['custom_ids']);
         }
         $model_Tour->orderBy("bravo_tours.".$model['order'], $model['order_by']);
         $model_Tour->where("bravo_tours.status", "publish");

@@ -10,6 +10,7 @@ Route::post('/store/{id}','SpaceController@store')->name('space.admin.store');
 Route::post('/bulkEdit','SpaceController@bulkEdit')->name('space.admin.bulkEdit');
 Route::get('/recovery','SpaceController@recovery')->name('space.admin.recovery');
 Route::get('/getForSelect2','SpaceController@getForSelect2')->name('space.admin.getForSelect2');
+Route::get('/getForSelect2','SpaceController@getForSelect2')->name('space.admin.getForSelect2');
 
 
 Route::group(['prefix'=>'attribute'],function (){

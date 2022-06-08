@@ -98,7 +98,24 @@ class ListHotel extends BaseBlock
                     'label'=>__("Only featured items?"),
                     'id'=> "is_featured",
                     'default'=>true
-                ]
+                ],
+                [
+                    'id'           => 'custom_ids',
+                    'type'         => 'select2',
+                    'label'        => __('List by IDs'),
+                    'select2'      => [
+                        'ajax'        => [
+                            'url'      => route('hotel.admin.getForSelect2'),
+                            'dataType' => 'json'
+                        ],
+                        'width'       => '100%',
+                        'multiple'    => "true",
+                        'placeholder' => __('-- Select --')
+                    ],
+                    'pre_selected' => route('hotel.admin.getForSelect2', [
+                        'pre_selected' => 1
+                    ])
+                ],
             ],
             'category'=>__("Service Hotel")
         ]);
@@ -144,12 +161,13 @@ class ListHotel extends BaseBlock
                 });
             }
         }
-
         if(!empty($model['is_featured']))
         {
-            $model_hotel->where('is_featured',1);
+            $model_hotel->where('bravo_hotels.is_featured',1);
         }
-
+        if (!empty($model['custom_ids'])) {
+            $model_hotel->whereIn("bravo_hotels.id", $model['custom_ids']);
+        }
         $model_hotel->orderBy("bravo_hotels.".$model['order'], $model['order_by']);
         $model_hotel->where("bravo_hotels.status", "publish");
         $model_hotel->with('location');

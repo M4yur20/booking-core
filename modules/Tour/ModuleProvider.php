@@ -29,6 +29,7 @@ class ModuleProvider extends ModuleServiceProvider
 
     public static function getBookableServices()
     {
+        if(!Tour::isEnable()) return [];
         return [
             'tour' => Tour::class,
         ];

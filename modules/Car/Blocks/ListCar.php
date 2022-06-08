@@ -94,7 +94,24 @@ class ListCar extends BaseBlock
                     'label'=>__("Only featured items?"),
                     'id'=> "is_featured",
                     'default'=>true
-                ]
+                ],
+                [
+                    'id'           => 'custom_ids',
+                    'type'         => 'select2',
+                    'label'        => __('List by IDs'),
+                    'select2'      => [
+                        'ajax'        => [
+                            'url'      => route('car.admin.getForSelect2'),
+                            'dataType' => 'json'
+                        ],
+                        'width'       => '100%',
+                        'multiple'    => "true",
+                        'placeholder' => __('-- Select --')
+                    ],
+                    'pre_selected' => route('car.admin.getForSelect2', [
+                        'pre_selected' => 1
+                    ])
+                ],
             ],
             'category'=>__("Service Car")
         ]);
@@ -140,12 +157,13 @@ class ListCar extends BaseBlock
                 });
             }
         }
-
         if(!empty($model['is_featured']))
         {
-            $model_car->where('is_featured',1);
+            $model_car->where('bravo_events.is_featured',1);
         }
-
+        if (!empty($model['custom_ids'])) {
+            $model_car->whereIn("bravo_events.id", $model['custom_ids']);
+        }
         $model_car->orderBy("bravo_cars.".$model['order'], $model['order_by']);
         $model_car->where("bravo_cars.status", "publish");
         $model_car->with('location');

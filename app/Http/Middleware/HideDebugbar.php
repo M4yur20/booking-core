@@ -21,6 +21,9 @@ class HideDebugbar
             if (!Auth::user() || !Auth::user()->hasPermissionTo('system_log_view')) {
                 \Debugbar::disable();
             }
+            if($request->segment(1) === 'messenger'){
+                \Debugbar::disable();
+            }
         }
         return $next($request);
     }

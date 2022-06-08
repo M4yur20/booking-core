@@ -43,14 +43,10 @@
                 @if(is_default_lang())
                 <div class="form-group">
                     <label>{{__("Timezone")}}</label>
-                    @php
-                        $path = resource_path('module/core/timezone.json');
-                        $timezones = json_decode(\Illuminate\Support\Facades\File::get($path));
-                    @endphp
                     <div class="form-controls">
                         <select name="site_timezone" class="form-control">
                             <option value="UTC">{{__("-- Default --")}}</option>
-                            @if(!empty($timezones))
+                            @if(!empty($timezones = generate_timezone_list()))
                                 @foreach($timezones as $item=>$value)
                                     <option @if($item == ($settings['site_timezone'] ?? '') ) selected @endif value="{{$item}}">{{$value}}</option>
                                 @endforeach

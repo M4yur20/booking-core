@@ -81,7 +81,8 @@ class TwoCheckoutGateway extends \Modules\Booking\Gateways\BaseGateway
         $booking->payment_id = $payment->id;
         $booking->save();
         if ($this->getOption('twocheckout_enable_sandbox')) {
-            $checkout_url_sandbox = 'https://sandbox.2checkout.com/checkout/purchase';
+            $checkout_url_sandbox = 'https://www.2checkout.com/checkout/purchase';
+            $data['demo']='Y';
         } else {
             $checkout_url_sandbox = 'https://www.2checkout.com/checkout/purchase';
         }

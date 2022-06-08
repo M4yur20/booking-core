@@ -63,7 +63,7 @@ class SpaceController extends Controller
             'list_location'      => $this->locationClass::where('status', 'publish')->limit($limit_location)->with(['translations'])->get()->toTree(),
             'space_min_max_price' => $this->spaceClass::getMinMaxPrice(),
             'markers'            => $markers,
-            "blank"              => 1,
+            "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->spaceClass::getSeoMetaForPageList()
         ];
         $layout = setting_item("space_layout_search", 'normal');

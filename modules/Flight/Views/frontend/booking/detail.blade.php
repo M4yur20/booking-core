@@ -81,7 +81,6 @@
                 @endif
             </ul>
         </div>
-        {{--@include('Booking::frontend/booking/checkout-coupon')--}}
         <div class="review-section total-review">
             <ul class="review-list">
                 @php $flight_seat = $booking->getJsonMeta('flight_seat')@endphp
@@ -150,6 +149,7 @@
                         </li>
                     @endforeach
                 @endif
+                @includeIf('Coupon::frontend/booking/checkout-coupon')
                 <li class="final-total d-block">
                     <div class="d-flex justify-content-between">
                         <div class="label">{{__("Total:")}}</div>

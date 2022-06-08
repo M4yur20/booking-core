@@ -3,7 +3,7 @@
     namespace App;
 
     use Bavix\Wallet\Interfaces\Wallet;
-    use Chatify\Http\Models\Message;
+    use App\Models\ChMessage as Message;
     use Illuminate\Notifications\Notifiable;
     use Illuminate\Contracts\Auth\MustVerifyEmail;
     use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -56,6 +56,7 @@
             'avatar_id',
             'bio',
             'business_name',
+            'status',
 //            'vendor_plan_id',
 //            'vendor_plan_enable',
 //            'vendor_plan_start_date',

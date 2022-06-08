@@ -20,10 +20,11 @@ jQuery(function ($) {
 	});
 
 	var mapEngine = new BravoMapEngine('bravo_results_map',{
-		fitBounds:true,
-		center:[51.505, -0.09],
-		zoom:6,
+		fitBounds:bookingCore.map_options.map_fit_bounds,
+		center:[bravo_map_data.map_lat_default, bravo_map_data.map_lng_default ],
+		zoom:bravo_map_data.map_zoom_default,
 		disableScripts:true,
+		markerClustering:bookingCore.map_options.map_clustering,
 		ready: function (engineMap) {
 			if(bravo_map_data.markers){
 				engineMap.addMarkers2(bravo_map_data.markers);

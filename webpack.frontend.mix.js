@@ -27,3 +27,4 @@ mix.sass('public/module/car/scss/car.scss','module/car/css');
 mix.sass('public/module/event/scss/event.scss','module/event/css');
 mix.sass('public/module/social/scss/social.scss','module/social/css');
 mix.sass('public/module/flight/scss/flight.scss','module/flight/css');
+mix.sass('public/module/boat/scss/boat.scss','module/boat/css');

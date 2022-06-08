@@ -19,17 +19,23 @@
         {{__("Start date")}} : {{display_date($booking->start_date)}} <br>
         {{__("End date")}} : {{display_date($booking->end_date)}} <br>
         {{__("Duration")}} : {{__(':duration hrs',['duration'=>@$booking->service->duration])}}
-
-
     @if($booking->duration_days <= 1)
             {{__(':count day',['count'=>$booking->duration_days])}}
         @else
             {{__(':count days',['count'=>$booking->duration_days])}}
         @endif
     </td>
-    <td>{{format_money_main($booking->total)}}</td>
-    <td>{{format_money($booking->paid)}}</td>
-    <td>{{format_money($booking->total - $booking->paid)}}</td>
+    <td>
+        <div>{{__("Total")}}: {{format_money_main($booking->total)}}</div>
+        <div>{{__("Paid")}}: {{format_money_main($booking->paid)}}</div>
+        <div>{{__("Remain")}}: {{format_money($booking->total - $booking->paid)}}</div>
+    </td>
+    <td>
+        @php $commission = $booking->commission @endphp
+        @if(!empty($commission))
+            {{ format_money($commission) }}
+        @endif
+    </td>
     <td class="{{$booking->status}} a-hidden">{{$booking->statusName}}</td>
     <td width="2%">
         @if($service = $booking->service)

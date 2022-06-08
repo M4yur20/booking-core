@@ -66,8 +66,6 @@
 								me.message.type = false;
                             }
                         }
-
-
                     }
                 })
             },

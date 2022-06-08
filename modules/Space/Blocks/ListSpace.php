@@ -30,73 +30,90 @@ class ListSpace extends BaseBlock
                     'label'     => __('Number Item')
                 ],
                 [
-                    'id'            => 'style',
-                    'type'          => 'radios',
-                    'label'         => __('Style'),
-                    'values'        => [
+                    'id'     => 'style',
+                    'type'   => 'radios',
+                    'label'  => __('Style'),
+                    'values' => [
                         [
-                            'value'   => 'normal',
-                            'name' => __("Normal")
+                            'value' => 'normal',
+                            'name'  => __("Normal")
                         ],
                         [
-                            'value'   => 'carousel',
-                            'name' => __("Slider Carousel")
+                            'value' => 'carousel',
+                            'name'  => __("Slider Carousel")
                         ]
                     ]
                 ],
                 [
-                    'id'      => 'location_id',
-                    'type'    => 'select2',
-                    'label'   => __('Filter by Location'),
-                    'select2' => [
-                        'ajax'  => [
+                    'id'           => 'location_id',
+                    'type'         => 'select2',
+                    'label'        => __('Filter by Location'),
+                    'select2'      => [
+                        'ajax'        => [
                             'url'      => url('/admin/module/location/getForSelect2'),
                             'dataType' => 'json'
                         ],
-                        'width' => '100%',
-                        'allowClear' => 'true',
+                        'width'       => '100%',
+                        'allowClear'  => 'true',
                         'placeholder' => __('-- Select --')
                     ],
-                    'pre_selected'=>url('/admin/module/location/getForSelect2?pre_selected=1')
+                    'pre_selected' => url('/admin/module/location/getForSelect2?pre_selected=1')
                 ],
                 [
-                    'id'            => 'order',
-                    'type'          => 'radios',
-                    'label'         => __('Order'),
-                    'values'        => [
+                    'id'     => 'order',
+                    'type'   => 'radios',
+                    'label'  => __('Order'),
+                    'values' => [
                         [
-                            'value'   => 'id',
-                            'name' => __("Date Create")
+                            'value' => 'id',
+                            'name'  => __("Date Create")
                         ],
                         [
-                            'value'   => 'title',
-                            'name' => __("Title")
+                            'value' => 'title',
+                            'name'  => __("Title")
                         ],
                     ]
                 ],
                 [
-                    'id'            => 'order_by',
-                    'type'          => 'radios',
-                    'label'         => __('Order By'),
-                    'values'        => [
+                    'id'     => 'order_by',
+                    'type'   => 'radios',
+                    'label'  => __('Order By'),
+                    'values' => [
                         [
-                            'value'   => 'asc',
-                            'name' => __("ASC")
+                            'value' => 'asc',
+                            'name'  => __("ASC")
                         ],
                         [
-                            'value'   => 'desc',
-                            'name' => __("DESC")
+                            'value' => 'desc',
+                            'name'  => __("DESC")
                         ],
                     ]
                 ],
                 [
-                    'type'=> "checkbox",
-                    'label'=>__("Only featured items?"),
-                    'id'=> "is_featured",
-                    'default'=>true
-                ]
+                    'type'    => "checkbox",
+                    'label'   => __("Only featured items?"),
+                    'id'      => "is_featured",
+                    'default' => true
+                ],
+                [
+                    'id'           => 'custom_ids',
+                    'type'         => 'select2',
+                    'label'        => __('List by IDs'),
+                    'select2'      => [
+                        'ajax'        => [
+                            'url'      => route('space.admin.getForSelect2'),
+                            'dataType' => 'json'
+                        ],
+                        'width'       => '100%',
+                        'multiple'    => "true",
+                        'placeholder' => __('-- Select --')
+                    ],
+                    'pre_selected' => route('space.admin.getForSelect2', [
+                        'pre_selected' => 1
+                    ])
+                ],
             ],
-            'category'=>__("Service Space")
+            'category' => __("Service Space")
         ]);
     }
 
@@ -117,36 +134,43 @@ class ListSpace extends BaseBlock
         return view('Space::frontend.blocks.list-space.index', $data);
     }
 
-    public function contentAPI($model = []){
+    public function contentAPI($model = [])
+    {
         $rows = $this->query($model);
-        $model['data']= $rows->map(function($row){
+        $model['data'] = $rows->map(function ($row) {
             return $row->dataForApi();
         });
         return $model;
     }
 
-    public function query($model){
-        $model_space = Space::select("bravo_spaces.*")->with(['location','translations','hasWishList']);
-        if(empty($model['order'])) $model['order'] = "id";
-        if(empty($model['order_by'])) $model['order_by'] = "desc";
-        if(empty($model['number'])) $model['number'] = 5;
+    public function query($model)
+    {
+        $model_space = Space::select("bravo_spaces.*")->with([
+            'location',
+            'translations',
+            'hasWishList'
+        ]);
+        if (empty($model['order']))
+            $model['order'] = "id";
+        if (empty($model['order_by']))
+            $model['order_by'] = "desc";
+        if (empty($model['number']))
+            $model['number'] = 5;
         if (!empty($model['location_id'])) {
-            $location = Location::where('id', $model['location_id'])->where("status","publish")->first();
-            if(!empty($location)){
+            $location = Location::where('id', $model['location_id'])->where("status", "publish")->first();
+            if (!empty($location)) {
                 $model_space->join('bravo_locations', function ($join) use ($location) {
-                    $join->on('bravo_locations.id', '=', 'bravo_spaces.location_id')
-                        ->where('bravo_locations._lft', '>=', $location->_lft)
-                        ->where('bravo_locations._rgt', '<=', $location->_rgt);
+                    $join->on('bravo_locations.id', '=', 'bravo_spaces.location_id')->where('bravo_locations._lft', '>=', $location->_lft)->where('bravo_locations._rgt', '<=', $location->_rgt);
                 });
             }
         }
-
-        if(!empty($model['is_featured']))
-        {
-            $model_space->where('is_featured',1);
+        if (!empty($model['is_featured'])) {
+            $model_space->where('bravo_spaces.is_featured', 1);
         }
-
-        $model_space->orderBy("bravo_spaces.".$model['order'], $model['order_by']);
+        if (!empty($model['custom_ids'])) {
+            $model_space->whereIn("bravo_spaces.id", $model['custom_ids']);
+        }
+        $model_space->orderBy("bravo_spaces." . $model['order'], $model['order_by']);
         $model_space->where("bravo_spaces.status", "publish");
         $model_space->with('location');
         $model_space->groupBy("bravo_spaces.id");

@@ -30,7 +30,10 @@ class EventTranslation extends Event
     public function getSeoType(){
         return $this->seo_type;
     }
+    public function getRecordRoot(){
+        return $this->belongsTo(Event::class,'origin_id');
 
+    }
     public static function boot() {
 		parent::boot();
 		static::saving(function($table)  {

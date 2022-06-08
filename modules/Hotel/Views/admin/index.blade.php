@@ -41,9 +41,8 @@
                         \App\Helpers\AdminForm::select2('vendor_id', [
                             'configs' => [
                                 'ajax'        => [
-                                    'url'      => url('/admin/module/user/getForSelect2'),
+                                    'url'      => url('/admin/module/user/getForSelect2?user_type=vendor'),
                                     'dataType' => 'json',
-                                    'data' => array("user_type"=>"vendor")
                                 ],
                                 'allowClear'  => true,
                                 'placeholder' => __('-- Vendor --')

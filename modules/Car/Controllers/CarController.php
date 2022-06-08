@@ -55,7 +55,7 @@ class CarController extends Controller
             'list_location'      => $this->locationClass::where('status', 'publish')->limit($limit_location)->with(['translations'])->get()->toTree(),
             'car_min_max_price' => $this->carClass::getMinMaxPrice(),
             'markers'            => $markers,
-            "blank"              => 1,
+            "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->carClass::getSeoMetaForPageList()
         ];
         $layout = setting_item("car_layout_search", 'normal');

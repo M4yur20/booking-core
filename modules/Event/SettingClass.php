@@ -52,6 +52,10 @@ class SettingClass extends BaseSettingsClass
 
                     'event_booking_type',
                     'event_icon_marker_map',
+
+                    'event_map_lat_default',
+                    'event_map_lng_default',
+                    'event_map_zoom_default',
                 ],
                 'html_keys'=>[
 

@@ -123,7 +123,7 @@
                 <div class="review-pag-text">{{__("No Review")}}</div>
             @endif
         </div>
-        @if($row->check_enable_review_after_booking() and Auth::id())
+        @if(Auth::id())
             <div class="review-form">
                 <div class="title-form">
                     {{__("Write a review")}}

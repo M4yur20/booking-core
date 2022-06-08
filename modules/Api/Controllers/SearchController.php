@@ -2,6 +2,7 @@
 namespace Modules\Api\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Booking\Models\Service;
 
 class SearchController extends Controller
 {
@@ -31,6 +32,21 @@ class SearchController extends Controller
         );
     }
 
+
+    public function searchServices(){
+        $rows = call_user_func([new Service(),'search'],request());
+        $total = $rows->total();
+        return $this->sendSuccess(
+            [
+                'total'=>$total,
+                'total_pages'=>$rows->lastPage(),
+                'data'=>$rows->map(function($row){
+                    return $row->dataForApi();
+                }),
+            ]
+        );
+    }
+
     public function getFilters($type = ''){
         $type = $type ? $type : request()->get('type');
         if(empty($type))
@@ -42,6 +58,24 @@ class SearchController extends Controller
             return $this->sendError(__("Type does not exists"));
         }
         $data = call_user_func([$class,'getFiltersSearch'],request());
+        return $this->sendSuccess(
+            [
+                'data'=>$data
+            ]
+        );
+    }
+
+    public function getFormSearch($type = ''){
+        $type = $type ? $type : request()->get('type');
+        if(empty($type))
+        {
+            return $this->sendError(__("Type is required"));
+        }
+        $class = get_bookable_service_by_id($type);
+        if(empty($class) or !class_exists($class)){
+            return $this->sendError(__("Type does not exists"));
+        }
+        $data = call_user_func([$class,'getFormSearch'],request());
         return $this->sendSuccess(
             [
                 'data'=>$data

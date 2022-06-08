@@ -58,6 +58,13 @@
                         'pusher_api_secret',
                         'pusher_app_id',
                         'pusher_cluster',
+
+                        'search_open_tab',
+
+                        'map_lat_default',
+                        'map_lng_default',
+                        'map_clustering',
+                        'map_fit_bounds',
 					],
                     'filter_demo_mode'=>[
                         'head_scripts',

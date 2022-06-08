@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Modules\Booking\Models\Bookable;
 use Modules\Booking\Models\Booking;
 use Modules\Booking\Models\BookingTimeSlots;
+use Modules\Booking\Traits\CapturesService;
 use Modules\Core\Models\Attributes;
 use Modules\Core\Models\SEO;
 use Modules\Core\Models\Terms;
@@ -26,6 +27,7 @@ class Event extends Bookable
 {
     use Notifiable;
     use SoftDeletes;
+    use CapturesService;
     protected $table = 'bravo_events';
     public $type = 'event';
     public $checkout_booking_detail_file       = 'Event::frontend/booking/detail';
@@ -267,42 +269,17 @@ class Event extends Bookable
 
         //Buyer Fees for Admin
         $total_before_fees = $total;
-        $list_buyer_fees = setting_item('event_booking_buyer_fees');
         $total_buyer_fee = 0;
-        if (!empty($list_buyer_fees)) {
-            $lists = json_decode($list_buyer_fees, true);
-            foreach ($lists as $item) {
-                //for Fixed
-                $fee_price = $item['price'];
-                // for Percent
-                if (!empty($item['unit']) and $item['unit'] == "percent") {
-                    $fee_price = ($total_before_fees / 100) * $item['price'];
-                }
-                if (!empty($item['per_ticket']) and $item['per_ticket'] == "on") {
-                    $total_buyer_fee += $fee_price * $total_tickets;
-                } else {
-                    $total_buyer_fee += $fee_price;
-                }
-            }
+        if (!empty($list_buyer_fees = setting_item('event_booking_buyer_fees'))) {
+            $list_fees = json_decode($list_buyer_fees, true);
+            $total_buyer_fee = $this->calculateServiceFees($list_fees , $total_before_fees , $total_tickets);
             $total += $total_buyer_fee;
         }
 
         //Service Fees for Vendor
         $total_service_fee = 0;
         if(!empty($this->enable_service_fee) and !empty($list_service_fee = $this->service_fee)){
-            foreach ($list_service_fee as $item) {
-                //for Fixed
-                $serice_fee_price = $item['price'];
-                // for Percent
-                if (!empty($item['unit']) and $item['unit'] == "percent") {
-                    $serice_fee_price = ($total_before_fees / 100) * $item['price'];
-                }
-                if (!empty($item['per_ticket']) and $item['per_ticket'] == "on") {
-                    $total_service_fee += $serice_fee_price * $total_tickets;
-                } else {
-                    $total_service_fee += $serice_fee_price;
-                }
-            }
+            $total_service_fee = $this->calculateServiceFees($list_service_fee , $total_before_fees , $total_tickets);
             $total += $total_service_fee;
         }
 
@@ -321,6 +298,7 @@ class Event extends Bookable
         $booking->vendor_service_fee = $list_service_fee ?? '';
         $booking->buyer_fees = $list_buyer_fees ?? '';
         $booking->total_before_fees = $total_before_fees;
+        $booking->total_before_discount = $total_before_fees;
 
         $booking->calculateCommission();
         if($this->isDepositEnable())
@@ -406,13 +384,15 @@ class Event extends Bookable
         $dataBooking = $this->bookingClass::select("id")->where('object_id', $this->id)->where('start_date', $start_date)->whereNotIn('status', $this->bookingClass::$notAcceptedStatus)->get();
         foreach ($dataBooking as $booking){
             $bookingTicketTypes = $booking->getJsonMeta('ticket_types') ?? [];
-            foreach ($bookingTicketTypes as $bookingTicket){
-                $numberBoook = $bookingTicket['number'];
-                foreach ($ticket_types as &$ticket){
-                    if( $ticket['code'] == $bookingTicket['code']){
-                        $ticket['number'] =  $ticket['number'] - $numberBoook;
-                        if($ticket['number'] < 0){
-                            $ticket['number'] = 0;
+            if(!empty($bookingTicketTypes)){
+                foreach ($bookingTicketTypes as $bookingTicket){
+                    $numberBoook = $bookingTicket['number'];
+                    foreach ($ticket_types as &$ticket){
+                        if( $ticket['code'] == $bookingTicket['code']){
+                            $ticket['number'] =  $ticket['number'] - $numberBoook;
+                            if($ticket['number'] < 0){
+                                $ticket['number'] = 0;
+                            }
                         }
                     }
                 }
@@ -657,36 +637,22 @@ class Event extends Bookable
         return setting_item("event_review_approved", 0);
     }
 
-    public function check_enable_review_after_booking()
-    {
-        $option = setting_item("event_enable_review_after_booking", 0);
-        if ($option) {
-            $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id()) ?? 0;
-            $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id()) ?? 0;
-            if ($number_review >= $number_booking) {
-                return false;
-            }
-        }
-        return true;
+    public function review_after_booking(){
+        return setting_item("event_enable_review_after_booking", 0);
     }
 
-    public function check_allow_review_after_making_completed_booking()
+    public function count_remain_review()
     {
+        $status_making_completed_booking = [];
         $options = setting_item("event_allow_review_after_making_completed_booking", false);
         if (!empty($options)) {
-            $status = json_decode($options);
-            $booking = $this->bookingClass::select("status")
-                ->where("object_id", $this->id)
-                ->where("object_model", $this->type)
-                ->where("customer_id", Auth::id())
-                ->orderBy("id","desc")
-                ->first();
-            $booking_status = $booking->status ?? false;
-            if(!in_array($booking_status , $status)){
-                return false;
-            }
+            $status_making_completed_booking = json_decode($options);
         }
-        return true;
+        $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id(), false, $this->type) ?? 0;
+        $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id(),$status_making_completed_booking) ?? 0;
+        $number = $number_booking - $number_review;
+        if($number < 0) $number = 0;
+        return $number;
     }
 
     public static function getReviewStats()
@@ -967,7 +933,7 @@ class Event extends Bookable
         {
             $terms[] = $term_id;
         }
-        if (is_array($terms) && !empty($terms)) {
+        if (is_array($terms) and !empty($terms = array_filter($terms))) {
             $model_event->join('bravo_event_term as tt', 'tt.target_id', "bravo_events.id")->whereIn('tt.term_id', $terms);
         }
         $review_scores = $request->query('review_score');
@@ -1114,5 +1080,28 @@ class Event extends Bookable
             $time_slots[] = date('H:i', $i);
         }
         return $time_slots;
+    }
+
+    static public function getFormSearch()
+    {
+        $search_fields = setting_item_array('event_search_fields');
+        $search_fields = array_values(\Illuminate\Support\Arr::sort($search_fields, function ($value) {
+            return $value['position'] ?? 0;
+        }));
+        foreach ( $search_fields as &$item){
+            if($item['field'] == 'attr' and !empty($item['attr']) ){
+                $attr = Attributes::find($item['attr']);
+                $item['attr_title'] = $attr->translateOrOrigin(app()->getLocale())->name;
+                foreach($attr->terms as $term)
+                {
+                    $translate = $term->translateOrOrigin(app()->getLocale());
+                    $item['terms'][] =  [
+                        'id' => $term->id,
+                        'title' => $translate->name,
+                    ];
+                }
+            }
+        }
+        return $search_fields;
     }
 }

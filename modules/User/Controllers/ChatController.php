@@ -4,7 +4,7 @@ namespace Modules\User\Controllers;
 
 use App\User;
 use Chatify\Facades\ChatifyMessenger as Chatify;
-use Chatify\Http\Models\Message;
+use App\Models\ChMessage as Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -78,16 +78,16 @@ class ChatController extends FrontendController
         $tmpUser = $user_id ? User::find($user_id) : false;
         // get all users that received/sent message from/to [Auth user]
         $query = Message::query()->join('users',  function ($join) {
-            $join->on('messages.from_id', '=', 'users.id')
-                ->orOn('messages.to_id', '=', 'users.id');
+            $join->on('ch_messages.from_id', '=', 'users.id')
+                ->orOn('ch_messages.to_id', '=', 'users.id');
         })
-            ->where('messages.from_id', Auth::user()->id)
-            ->orWhere('messages.to_id', Auth::user()->id);
+            ->where('ch_messages.from_id', Auth::user()->id)
+            ->orWhere('ch_messages.to_id', Auth::user()->id);
 
         if($user_id){
             $query->orderByRaw('CASE when users.id = ? then 1 else 2 end',[$user_id]);
         }
-        $query->orderBy('messages.created_at', 'desc');
+        $query->orderBy('ch_messages.created_at', 'desc');
         $users = $query->get()
             ->unique('id');
 

@@ -365,6 +365,21 @@ $style_typo = json_decode(setting_item_with_lang('style_typo',false,"{}"),true);
         @endforeach
     @endif
     }
+    @if(!empty($style_h1_font_family = setting_item_with_lang("style_h1_font_family") ))
+        h1{
+            font-family: {{ $style_h1_font_family }}, sans-serif
+        }
+    @endif
+    @if(!empty($style_h2_font_family = setting_item_with_lang("style_h2_font_family") ))
+        h2{
+            font-family: {{ $style_h2_font_family }}, sans-serif
+        }
+    @endif
+    @if(!empty($style_h3_font_family = setting_item_with_lang("style_h3_font_family") ))
+        h3{
+            font-family: {{ $style_h3_font_family }}, sans-serif
+        }
+    @endif
 
     {!! (setting_item('style_custom_css')) !!}
     {!! (setting_item_with_lang_raw('style_custom_css')) !!}

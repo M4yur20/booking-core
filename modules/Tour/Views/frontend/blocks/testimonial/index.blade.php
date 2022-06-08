@@ -11,7 +11,7 @@
                                 <img src="{{$avatar_url}}" alt="{{$item['name']}}">
                                 <div class="author-meta">
                                     <h4>{{$item['name']}}</h4>
-                                    @if($item['number_star'])
+                                    @if(!empty($item['number_star']))
                                         <div class="star">
                                             @for($i = 0 ; $i < $item['number_star'] ; $i++)
                                                 <i class="fa fa-star"></i>

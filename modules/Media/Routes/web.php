@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 //
 Route::get('media/private/view','MediaController@privateFileView')->middleware('auth')->name('media.private.view');
+Route::post('media/edit_image','MediaController@editImage')->name('media.edit.image');
 
 // Media
 Route::group(['prefix'=>'media'],function(){

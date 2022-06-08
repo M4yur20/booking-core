@@ -48,7 +48,7 @@
         {{$rows->appends($request->query())->links()}}
     </div>
     <div id="bravo_modal_calendar" class="modal fade">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-dialog modal-lg  modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Date Information')}}</h5>

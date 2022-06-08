@@ -15,6 +15,9 @@
     use Modules\Car\Models\CarTranslation;
     use Modules\Core\Models\Settings;
     use Modules\Event\Models\EventTranslation;
+    use Modules\Flight\Models\BookingPassengers;
+    use Modules\Flight\Models\Flight;
+    use Modules\Flight\Models\FlightSeat;
     use Modules\Hotel\Models\Hotel;
     use Modules\Hotel\Models\HotelRoom;
     use Modules\Hotel\Models\HotelTranslation;
@@ -58,6 +61,8 @@
                 $this->updateTo190();
                 $this->updateTo200();
                 $this->updateTo210();
+                $this->updateTo220();
+                $this->updateTo230();
             }
             return $next($request);
         }
@@ -997,6 +1002,89 @@
             Artisan::call('cache:clear');
         }
 
+        public function updateTo220()
+        {
+            $version = '2.2.0.1';
+            if (version_compare(setting_item('update_to_220'), $version, '>=')) return;
+
+            Artisan::call('migrate', [
+                '--force' => true,
+            ]);
+            Schema::table('bravo_service_translations', function (Blueprint $table) {
+                if (!Schema::hasColumn('bravo_service_translations', 'deleted_at')) {
+                    $table->softDeletes();
+                }
+            });
+            Schema::table('bravo_bookings', function (Blueprint $table) {
+                if (!Schema::hasColumn('bravo_bookings', 'is_paid')) {
+                    $table->tinyInteger('is_paid')->nullable();
+                }
+            });
+
+            $allServices = get_bookable_services();
+            foreach ($allServices as $service) {
+                $alls = $service::query()->orderBy('id', 'desc')->get();
+                if (!empty($alls)) {
+                    foreach ($alls as $item) {  $item->save();$item->update_service_rate();
+                    }
+                }
+            }
+
+            setting_update_item("search_open_tab",'current_tab');
+            setting_update_item("map_clustering",'on');
+            setting_update_item("map_fit_bounds",'on');
+
+            Schema::table('media_files',function (Blueprint $table){
+                if(!Schema::hasColumn('media_files','file_edit')){
+                    $table->tinyInteger('file_edit')->default(0)->nullable();
+                }
+            });
+
+            Permission::findOrCreate('coupon_view');
+            Permission::findOrCreate('coupon_create');
+            Permission::findOrCreate('coupon_update');
+            Permission::findOrCreate('coupon_delete');
+            $role = Role::findOrCreate('administrator');
+            $role->givePermissionTo(Permission::all());
+
+
+            Schema::table('bravo_bookings', function (Blueprint $table) {
+                if (!Schema::hasColumn('bravo_bookings', 'total_before_discount')) {
+                    $table->decimal('total_before_discount',10,2)->nullable()->default(0);
+                }
+                if (!Schema::hasColumn('bravo_bookings', 'coupon_amount')) {
+                    $table->decimal('coupon_amount',10,2)->nullable()->default(0);
+                }
+            });
+
+
+            setting_update_item('update_to_220',$version);
+            Artisan::call('cache:clear');
+        }
+        public function updateTo230()
+        {
+            $version = '2.3.0';
+            if (version_compare(setting_item('update_to_230'), $version, '>=')) return;
+
+            Artisan::call('migrate', [
+                '--force' => true,
+            ]);
+
+            // Boat
+            Permission::findOrCreate('boat_view');
+            Permission::findOrCreate('boat_create');
+            Permission::findOrCreate('boat_update');
+            Permission::findOrCreate('boat_delete');
+            Permission::findOrCreate('boat_manage_others');
+            Permission::findOrCreate('boat_manage_attributes');
+
+            $role = Role::findOrCreate('administrator');
+            $role->givePermissionTo(Permission::all());
+
+            setting_update_item('update_to_230',$version);
+            Artisan::call('cache:clear');
+        }
+
         protected function __updateReviewVendorId()
         {
             $all = Review::query()->whereNull('vendor_id')->get();
@@ -1044,5 +1132,39 @@
                 ];
                 LocationCategory::insert($argv);
             }
+        }
+        protected function removeForeignKey(){
+            try {
+                $flightForeignKey = $this->getForeignKeyByTable(Flight::getTableName());
+                Schema::table(Flight::getTableName(),function(Blueprint $blueprint)use ($flightForeignKey){
+                    foreach ($flightForeignKey as $key){
+                        $blueprint->dropForeign($key);
+
+                    }
+                });
+                $flightSeatForeignKey = $this->getForeignKeyByTable(FlightSeat::getTableName());
+                Schema::table(FlightSeat::getTableName(),function(Blueprint $blueprint) use ($flightSeatForeignKey){
+                    foreach ($flightSeatForeignKey as $key){
+                        $blueprint->dropForeign($key);
+
+                    }
+                });
+                $bookingPassengersForeignKey = $this->getForeignKeyByTable(FlightSeat::getTableName());
+                Schema::table(BookingPassengers::getTableName(),function(Blueprint $blueprint) use ($bookingPassengersForeignKey){
+                    foreach ($bookingPassengersForeignKey as $key){
+                        $blueprint->dropForeign($key);
+
+                    }
+                });
+            }catch (\Exception $exception){
+            }
+
+        }
+
+        protected function getForeignKeyByTable($tableName){
+            $conn = Schema::getConnection()->getDoctrineSchemaManager();
+            return array_map(function($key) {
+                return $key->getName();
+            }, $conn->listTableForeignKeys($tableName));
         }
     }

@@ -119,6 +119,9 @@ class SettingsController extends AdminController
                     'style_main_color',
                     'style_custom_css',
                     'style_typo',
+                    'style_h1_font_family',
+                    'style_h2_font_family',
+                    'style_h3_font_family',
                 ];
                 $filter_demo_mode = [
                     'style_custom_css',

@@ -49,19 +49,13 @@ class ReviewController extends Controller
                 return redirect()->to(url()->previous() . '#review-form')->with('error', __('Review not enable'));
             }
         }
-        $reviewEnableAfterBooking = $module->check_enable_review_after_booking();
-        if (!$reviewEnableAfterBooking) {
-            if($is_return){
-                return $this->sendError(__("You need booking before write a review"));
-            }else{
-                return redirect()->to(url()->previous() . '#review-form')->with('error', __('You need booking before write a review'));
-            }
-        }else{
-            if (!$module->check_allow_review_after_making_completed_booking() ) {
+
+        if($module->review_after_booking()){
+            if (!$module->count_remain_review()) {
                 if($is_return){
-                    return $this->sendError(__("You can review after making completed booking"));
+                    return $this->sendError(__("You need to make a booking or the Orders must be confirmed before writing a review"));
                 }else{
-                    return redirect()->to(url()->previous() . '#review-form')->with('error', __('You can review after making completed booking'));
+                    return redirect()->to(url()->previous() . '#review-form')->with('error', __('You need to make a booking or the Orders must be confirmed before writing a review'));
                 }
             }
         }

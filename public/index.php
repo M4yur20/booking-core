@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 if(!empty($_SERVER['REQUEST_URI'])){
 	if(strpos($_SERVER['REQUEST_URI'],'/install') !== false){
 		if(!file_exists(__DIR__.'/../.env')){
@@ -32,8 +34,10 @@ define('LARAVEL_START', microtime(true));
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
-
+//require __DIR__.'/../vendor/autoload.php';
+if (file_exists(__DIR__.'/../storage/framework/maintenance.php')) {
+    require __DIR__.'/../storage/framework/maintenance.php';
+}
 /*
 |--------------------------------------------------------------------------
 | Turn On The Lights
@@ -45,8 +49,7 @@ require __DIR__.'/../vendor/autoload.php';
 | the responses back to the browser and delight our users.
 |
 */
-
-$app = require_once __DIR__.'/../bootstrap/app.php';
+require __DIR__.'/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -60,12 +63,11 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+$app = require_once __DIR__.'/../bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 
-$response = $kernel->handle(
-    $request = Illuminate\Http\Request::capture()
-);
-
-$response->send();
+$response = tap($kernel->handle(
+    $request = Request::capture()
+))->send();
 
 $kernel->terminate($request, $response);

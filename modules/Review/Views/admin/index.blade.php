@@ -27,15 +27,15 @@
                     @csrf
                     @if(!empty($rows))
                         <?php
-                        $user = !empty(Request()->vendor_id) ? App\User::find(Request()->vendor_id) : false;
-                        \App\Helpers\AdminForm::select2('vendor_id', [
+                        $user = !empty(Request()->customer_id) ? App\User::find(Request()->customer_id) : false;
+                        \App\Helpers\AdminForm::select2('customer_id', [
                             'configs' => [
                                 'ajax'        => [
                                     'url' => url('/admin/module/user/getForSelect2'),
                                     'dataType' => 'json'
                                 ],
                                 'allowClear'  => true,
-                                'placeholder' => __('-- Vendor --')
+                                'placeholder' => __('-- Customer --')
                             ]
                         ], !empty($user->id) ? [
                             $user->id,
@@ -101,13 +101,10 @@
                                         <p>{{$row->content}}</p>
                                         @if(!empty($metaReviews = $row->getReviewMetaPicture()))
                                             @php $listImages = json_decode($metaReviews->val, true); @endphp
-                                            <div class="review_list_photos row mt-3">
+                                            <div class="review_list_photos d-flex mt-3">
                                                 @foreach($listImages as $oneImages)
                                                     @php $imagesData = json_decode($oneImages, true); @endphp
-                                                    <div class="col-md-2 mb-2">
-                                                        <div class="review_upload_item" style="background-image: url({{@$imagesData['download']}}); background-repeat: no-repeat; background-size: cover; background-position: center; height: 10vh;">
-                                                        </div>
-                                                    </div>
+                                                    <div class="review_upload_item" style="background-image: url({{@$imagesData['download']}}); background-repeat: no-repeat; background-size: cover; background-position: center; height: 100px;width: 100px;margin-right: 10px;"></div>
                                                 @endforeach
                                             </div>
                                         @endif
@@ -133,7 +130,7 @@
                                                         <div class="row">
                                                             @foreach($metaReviews as $metaReview)
                                                                 @if( in_array($metaReview->name , $allReviewStats))
-                                                                    <div class="item col-md-12 d-flex">
+                                                                    <div class="item col-md-12">
                                                                         <label style="margin-right: 15px;">{{$metaReview->name}}</label>
                                                                         <ul class="review-star">
                                                                             @for( $i = 0 ; $i < 5 ; $i++ )

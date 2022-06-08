@@ -61,7 +61,7 @@ class EventController extends Controller
             'list_location'      => $this->locationClass::where('status', 'publish')->limit($limit_location)->with(['translations'])->get()->toTree(),
             'event_min_max_price' => $this->eventClass::getMinMaxPrice(),
             'markers'            => $markers,
-            "blank"              => 1,
+            "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->eventClass::getSeoMetaForPageList()
         ];
         $layout = setting_item("event_layout_search", 'normal');

@@ -24,7 +24,7 @@ class ModuleProvider extends ModuleServiceProvider
     {
         return [
             'media'=>[
-                'position'=>50,
+                'position'=>56,
                 'title'=>__("Media"),
                 'icon'=>"fa fa-picture-o",
                 "url"=>route('media.admin.index')

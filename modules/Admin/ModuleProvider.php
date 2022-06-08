@@ -19,7 +19,7 @@ class ModuleProvider extends ModuleServiceProvider
      */
     public function register()
     {
-        $this->app->register(RouterServiceProvider::class);
+        //$this->app->register(RouterServiceProvider::class);
     }
 
 }

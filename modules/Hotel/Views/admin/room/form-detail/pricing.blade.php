@@ -18,9 +18,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="form-group">
-                    <label class="control-label">{{__("Min day stays")}}</label>
+                    <label class="control-label">{{__("Minimum day stay requirements")}}</label>
                     <input type="number" name="min_day_stays" class="form-control" value="{{$row->min_day_stays}}" placeholder="{{__("Ex: 2")}}">
-                    <i>{{ __("Leave blank if you dont need to use the min day stays option") }}</i>
+                    <i>{{ __("Leave blank if you dont need to set minimum day stay option") }}</i>
                 </div>
             </div>
         </div>

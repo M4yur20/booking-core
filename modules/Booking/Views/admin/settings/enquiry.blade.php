@@ -37,6 +37,12 @@
                             <label><input type="checkbox" name="booking_enquiry_for_event" value="1" @if(!empty($settings['booking_enquiry_for_event'])) checked @endif /> {{__("Enable enquiry form")}} </label>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label>{{__("Enable enquiry for Boat")}}</label>
+                        <div class="form-controls">
+                            <label><input type="checkbox" name="booking_enquiry_for_boat" value="1" @if(!empty($settings['booking_enquiry_for_boat'])) checked @endif /> {{__("Enable enquiry form")}} </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

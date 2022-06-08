@@ -52,6 +52,10 @@ class SettingClass extends BaseSettingsClass
 
                     'hotel_layout_map_option',
                     'hotel_icon_marker_map',
+
+                    'hotel_map_lat_default',
+                    'hotel_map_lng_default',
+                    'hotel_map_zoom_default',
                 ],
                 'html_keys'=>[
 

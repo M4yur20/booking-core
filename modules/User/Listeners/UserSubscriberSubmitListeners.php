@@ -5,6 +5,8 @@ namespace Modules\User\Listeners;
 use App\Notifications\AdminChannelServices;
 use App\Notifications\PrivateChannelServices;
 use App\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Modules\User\Events\NewVendorRegistered;
 use Modules\User\Events\RequestCreditPurchase;
 use Modules\User\Events\UserSubscriberSubmit;
@@ -27,7 +29,11 @@ class UserSubscriberSubmitListeners
             'message' => __('You have just gotten a new Subscriber')
         ];
 
-        $user = User::whereHas("roles", function($q){ $q->where("name", "administrator"); })->first();
-        $user->notify(new AdminChannelServices($data));
+        $user = User::whereHas("roles.permissions", function(Builder $q){ $q->where("name", "dashboard_access"); })->first();
+        
+        if($user){
+            $user->notify(new AdminChannelServices($data));
+        }
+
     }
 }

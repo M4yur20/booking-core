@@ -43,16 +43,14 @@
                 : ''
             !!}
             {{-- Last message body --}}
-            @if($lastMessage)
-                @if($lastMessage->attachment == null)
+            @if(!empty($lastMessage) and $lastMessage->attachment == null)
                 {!!
                     strlen($lastMessage->body) > 30
                     ? trim(substr($lastMessage->body, 0, 30)).'..'
                     : $lastMessage->body
                 !!}
-                @else
+            @else
                 <span class="fas fa-file"></span> {{__('Attachment')}}
-                @endif
             @endif
         </span>
         {{-- New messages counter --}}

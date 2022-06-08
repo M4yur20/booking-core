@@ -49,8 +49,9 @@ Route::group(['prefix'=>'wallet'],function (){
 Route::group(['prefix' => 'subscriber'], function () {
     Route::get('/', 'SubscriberController@index')->name('user.admin.subscriber.index');
     Route::get('edit/{id}', 'SubscriberController@edit')->name('user.admin.subscriber.edit');
-    Route::post('store/{id}', 'SubscriberController@store')->name('user.admin.subscriber.store');
+    Route::post('store', 'SubscriberController@store')->name('user.admin.subscriber.store');
     Route::post('/bulkEdit', 'SubscriberController@bulkEdit')->name('user.admin.subscriber.bulkEdit');
+    Route::get('export', 'SubscriberController@export')->name('user.admin.subscriber.export');
 });
 
 Route::get('/export', 'UserController@export')->name('user.admin.export');

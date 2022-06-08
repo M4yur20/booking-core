@@ -15,11 +15,13 @@ use \Illuminate\Support\Facades\Route;
 /* Config */
 Route::get('configs','BookingController@getConfigs')->name('api.get_configs');
 /* Service */
+Route::get('services','SearchController@searchServices')->name('api.service-search');
 Route::get('{type}/search','SearchController@search')->name('api.search2');
 Route::get('{type}/detail/{id}','SearchController@detail')->name('api.detail');
 Route::get('{type}/availability/{id}','SearchController@checkAvailability')->name('api.service.check_availability');
 
 Route::get('{type}/filters','SearchController@getFilters')->name('api.service.filter');
+Route::get('{type}/form-search','SearchController@getFormSearch')->name('api.service.form');
 
 Route::group(['middleware' => 'api'],function(){
     Route::post('{type}/write-review/{id}','ReviewController@writeReview')->name('api.service.write_review');

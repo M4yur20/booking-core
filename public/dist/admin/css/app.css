@@ -63,6 +63,17 @@
 .dungdt-upload-box.active .attach-demo {
   display: block;
 }
+.dungdt-upload-box .edit-img {
+  position: absolute;
+  color: white;
+  top: 15px;
+  right: 48px;
+  display: none;
+  cursor: pointer;
+}
+.dungdt-upload-box .edit-img:active {
+  background: #1a2b47;
+}
 .dungdt-upload-box .delete {
   color: white;
   position: absolute;
@@ -74,7 +85,7 @@
 .dungdt-upload-box .delete i {
   color: white;
 }
-.dungdt-upload-box:hover .delete {
+.dungdt-upload-box:hover .delete, .dungdt-upload-box:hover .edit-img {
   display: block;
 }
 
@@ -116,7 +127,21 @@
   right: 15px;
   cursor: pointer;
 }
-.dungdt-upload-multiple .attach-demo .image-item:hover .delete {
+.dungdt-upload-multiple .attach-demo .image-item .edit-img {
+  position: absolute;
+  color: white;
+  top: 15px;
+  right: 48px;
+  display: none;
+  cursor: pointer;
+}
+.dungdt-upload-multiple .attach-demo .image-item .edit-img:active {
+  background: #1a2b47;
+}
+.dungdt-upload-multiple .attach-demo .image-item .edit-img, .dungdt-upload-multiple .attach-demo .image-item .delete {
+  z-index: 9;
+}
+.dungdt-upload-multiple .attach-demo .image-item:hover .edit-img, .dungdt-upload-multiple .attach-demo .image-item:hover .delete {
   display: block;
 }
 .dungdt-upload-multiple .attach-demo .image-item .inner {

@@ -48,6 +48,12 @@
             date_format:'{{get_moment_date_format()}}',
             map_provider:'{{setting_item('map_provider')}}',
             map_gmap_key:'{{setting_item('map_gmap_key')}}',
+            map_options:{
+                map_lat_default:'{{setting_item('map_lat_default')}}',
+                map_lng_default:'{{setting_item('map_lng_default')}}',
+                map_clustering:'{{setting_item('map_clustering')}}',
+                map_fit_bounds:'{{setting_item('map_fit_bounds')}}',
+            },
             routes:{
                 login:'{{route('auth.login')}}',
                 register:'{{route('auth.register')}}',

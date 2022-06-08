@@ -1,5 +1,25 @@
 @if(is_default_lang())
-
+    <div class="row">
+        <div class="col-sm-4">
+            <h3 class="form-group-title">{{__("Search Options")}}</h3>
+        </div>
+        <div class="col-sm-8">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>{{__("Search open tab")}}</label>
+                        <div class="form-controls">
+                            <select name="search_open_tab" class="form-control" >
+                                <option value="current_tab" {{ ($settings['search_open_tab'] ?? '') == 'current_tab' ? 'selected' : ''  }}>{{__("Current Tab")}}</option>
+                                <option value="new_tab" {{($settings['search_open_tab'] ?? '') == 'new_tab' ? 'selected' : ''  }}>{{__('Open New Tab')}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
     <div class="row">
         <div class="col-sm-4">
             <h3 class="form-group-title">{{__("Square Size Unit")}}</h3>
@@ -43,6 +63,48 @@
                     <div class="form-controls">
                         <input type="text" name="map_gmap_key" value="{{$settings['map_gmap_key'] ?? ''}}" class="form-control">
                         <p><i><a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="blank">{{__("Learn how to get an api key")}}</a></i></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title"><strong>{{__('Map Options Default')}}</strong></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>{{__("Map Lat Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="map_lat_default" value="{{$settings['map_lat_default'] ?? ''}}" class="form-control" placeholder="21.030513">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>{{__("Map Lng Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="map_lng_default" value="{{$settings['map_lng_default'] ?? ''}}" class="form-control" placeholder="105.840565">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1">
+                       <i> {{ __('Get lat - lng in here') }} <a href="https://www.latlong.net" target="_blank">https://www.latlong.net</a></i>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>{{__("Map Clustering")}}</label>
+                    <div class="form-controls">
+                        <select name="map_clustering" class="form-control" >
+                            <option value="" {{ ($settings['map_clustering'] ?? '') == '' ? 'selected' : ''  }}>{{__("Off")}}</option>
+                            <option value="on" {{($settings['map_clustering'] ?? '') == 'on' ? 'selected' : ''  }}>{{__('On')}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>{{__("Map fitBounds")}}</label>
+                    <div class="form-controls">
+                        <select name="map_fit_bounds" class="form-control" >
+                            <option value="" {{ ($settings['map_fit_bounds'] ?? '') == '' ? 'selected' : ''  }}>{{__("Off")}}</option>
+                            <option value="on" {{($settings['map_fit_bounds'] ?? '') == 'on' ? 'selected' : ''  }}>{{__('On')}}</option>
+                        </select>
                     </div>
                 </div>
             </div>

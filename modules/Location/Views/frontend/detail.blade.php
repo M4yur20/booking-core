@@ -31,18 +31,18 @@
                             </div>
                             <div class="col-12 col-lg-7">
                                 <ul class="location-module-nav nav nav-pills justify-content-lg-end">
-                                    @php $i = 0 @endphp
+                                    @php $i = 0 ;$not_in =['flight']@endphp
                                     @foreach($types as $type=>$moduleClass)
                                         @php
-                                        if(!$moduleClass::isEnable()) continue;
-                                        $moduleInst = new $moduleClass();
-                                        $data[$type] = $moduleInst->select($moduleInst::getTableName().'.*')
-                                        ->join('bravo_locations', function ($join) use ($row,$moduleInst) {
-                                            $join->on('bravo_locations.id', '=', $moduleInst::getTableName().'.location_id')
-                                                ->where('bravo_locations._lft', '>=', $row->_lft)
-                                                ->where('bravo_locations._rgt', '<=', $row->_rgt);
-                                        })
-                                        ->where($moduleInst::getTableName().'.status','publish')->with('location')->take(8)->get();
+                                            if(!$moduleClass::isEnable() or in_array($type,$not_in)==true) continue;
+                                            $moduleInst = new $moduleClass();
+                                            $data[$type] = $moduleInst->select($moduleInst::getTableName().'.*')
+                                            ->join('bravo_locations', function ($join) use ($row,$moduleInst) {
+                                                $join->on('bravo_locations.id', '=', $moduleInst::getTableName().'.location_id')
+                                                    ->where('bravo_locations._lft', '>=', $row->_lft)
+                                                    ->where('bravo_locations._rgt', '<=', $row->_rgt);
+                                            })
+                                            ->where($moduleInst::getTableName().'.status','publish')->with('location')->take(8)->get();
                                         @endphp
                                         @if($data[$type]->count()>0)
                                             <li>

@@ -26,7 +26,11 @@ return [
     */
 
     'path' => env('CHATIFY_PATH', 'messenger'),
-
+    'routes' => [
+        'prefix' => env('CHATIFY_ROUTES_PREFIX', 'messenger'),
+        'middleware' => env('CHATIFY_ROUTES_MIDDLEWARE', ['web','auth']),
+        'namespace' => env('CHATIFY_ROUTES_NAMESPACE', 'Chatify\Http\Controllers'),
+    ],
     /*
     |--------------------------------------------------------------------------
     | Package's web routes middleware
@@ -37,7 +41,6 @@ return [
     |
     */
 
-    'middleware' => env('CHATIFY_MIDDLEWARE', 'auth'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,6 +59,8 @@ return [
         'options' => [
             'cluster' => env('PUSHER_APP_CLUSTER'),
             'encrypted' => false,
+            'useTLS' => env('PUSHER_APP_USETLS'),
+
         ],
     ],
 
@@ -92,6 +97,9 @@ return [
         'folder' => 'attachments',
         // Below is the route name to download attachments.
         'route' => 'attachments.download',
+        'download_route_name' => 'attachments.download',
+        'allowed_images' => (array) ['png','jpg','jpeg','gif'],
+        'allowed_files' => (array) ['zip','rar','txt'],
     ],
 
 

@@ -374,7 +374,7 @@
             return $percent;
         }
 
-        public function check_enable_review_after_booking()
+        public function review_after_booking()
         {
             return true;
         }
@@ -439,6 +439,7 @@
             $translation = $this->translateOrOrigin(app()->getLocale());
             $data = [
                 'id'               => $this->id,
+                'object_model'     => $this->type ?? $this->object_model ?? null,
                 'title'            => $translation->title,
                 'price'            => $this->price,
                 'sale_price'       => $this->sale_price,
@@ -479,5 +480,25 @@
                     return ucfirst($this->status ?? '');
                     break;
             }
+        }
+
+        public function calculateServiceFees($list_buyer_fees , $amount , $guests){
+            $total_amount_fee = 0;
+            if (!empty($list_buyer_fees)) {
+                foreach ($list_buyer_fees as $item) {
+                    //for Fixed
+                    $fee_price = $item['price'];
+                    // for Percent
+                    if (!empty($item['unit']) and $item['unit'] == "percent") {
+                        $fee_price = ($amount / 100) * $item['price'];
+                    }
+                    if (!empty($item['per_person']) and $item['per_person'] == "on") {
+                        $total_amount_fee += $fee_price * $guests;
+                    } else {
+                        $total_amount_fee += $fee_price;
+                    }
+                }
+            }
+            return $total_amount_fee;
         }
     }

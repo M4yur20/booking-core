@@ -69,6 +69,7 @@ class ModuleProvider extends ModuleServiceProvider
 
     public static function getBookableServices()
     {
+        if(!Space::isEnable()) return [];
         return [
             'space'=>Space::class
         ];

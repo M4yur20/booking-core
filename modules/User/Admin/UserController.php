@@ -265,7 +265,7 @@ class UserController extends AdminController
                 $query->where('first_name', 'like', '%' . $q . '%')->orWhere('last_name', 'like', '%' . $q . '%')->orWhere('email', 'like', '%' . $q . '%')->orWhere('id', $q)->orWhere('phone', 'like', '%' . $q . '%');
             });
         }
-        $res = $query->orderBy('id', 'desc')->orderBy('first_name', 'asc')->limit(20)->get();
+        $res = $query->orderBy('id', 'desc')->orderBy('first_name', 'asc')->limit(100)->get();
         $data = [];
         if (!empty($res)) {
             if($request->query("user_type") == "vendor"){

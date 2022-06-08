@@ -311,6 +311,25 @@ jQuery(function ($) {
             }
         })
     });
+    $(".bravo-list-boat").each(function () {
+        $(this).find(".owl-carousel").owlCarousel({
+            items: 4,
+            loop: false,
+            margin: 15,
+            nav: false,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                768: {
+                    items: 2
+                },
+                1000: {
+                    items: 4
+                }
+            }
+        })
+    });
     $(".bravo-list-event").each(function () {
         $(this).find(".owl-carousel").owlCarousel({
             items: 4,
@@ -341,6 +360,10 @@ jQuery(function ($) {
 
     // Date Picker Range
     $('.form-date-search').each(function () {
+        var single_picker = false;
+        if($(this).hasClass("is_single_picker")){
+            single_picker = true;
+        }
         var nowDate = new Date();
         var today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
         var parent = $(this),
@@ -351,7 +374,7 @@ jQuery(function ($) {
             check_in_render = $('.check-in-render', parent),
             check_out_render = $('.check-out-render', parent);
         var options = {
-            singleDatePicker: false,
+            singleDatePicker: single_picker,
             autoApply: true,
             disabledPast: true,
             customClass: '',
@@ -932,7 +955,7 @@ jQuery(function ($) {
                 form.find('.icon-loading').hide();
 
                 if(res.status){
-                    form.find('textarea,input,select').val('');
+                    form.find('textarea').val('');
                 }
 
                 if(typeof BravoReCaptcha != "undefined"){

@@ -17,5 +17,4 @@ Route::group(['prefix' => 'category'],function (){
     Route::get('/edit/{id}','CategoryController@edit')->name('location.admin.category.edit');
     Route::post('/store/{id}','CategoryController@store')->name('location.admin.category.store');
     Route::post('/bulkEdit','CategoryController@bulkEdit')->name('location.admin.category.bulkEdit');
-
 });

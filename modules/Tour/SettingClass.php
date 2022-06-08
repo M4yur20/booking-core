@@ -52,6 +52,10 @@ class SettingClass extends BaseSettingsClass
 
                     'tour_layout_map_option',
                     'tour_icon_marker_map',
+
+                    'tour_map_lat_default',
+                    'tour_map_lng_default',
+                    'tour_map_zoom_default',
                 ],
                 'html_keys'=>[
 

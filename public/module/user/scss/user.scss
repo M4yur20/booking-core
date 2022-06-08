@@ -1388,8 +1388,19 @@
                     color:white;
                 }
             }
+            .edit-img{
+                position: absolute;
+                color: white;
+                top: 15px;
+                right: 48px;
+                display: none;
+                cursor: pointer;
+                &:active{
+                    background: #1a2b47;
+                }
+            }
             &:hover{
-                .delete{
+                .delete, .edit-img{
                     display: block;
                 }
             }
@@ -1413,8 +1424,19 @@
                         right: 15px;
                         cursor: pointer;
                     }
+                    .edit-img{
+                        position: absolute;
+                        color: white;
+                        top: 15px;
+                        right: 48px;
+                        display: none;
+                        cursor: pointer;
+                        &:active{
+                            background: #1a2b47;
+                        }
+                    }
                     &:hover{
-                        .delete{
+                        .delete, .edit-img{
                             display: block;
                         }
                     }

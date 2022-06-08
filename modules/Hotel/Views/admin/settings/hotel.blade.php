@@ -29,21 +29,26 @@
                         </select>
                     </div>
                 </div>
-                @endif
-                <div class="form-group">
-                    <label class="" >{{__("Layout Map Option")}}</label>
-                    <div class="form-controls">
-                        <select name="hotel_layout_map_option" class="form-control">
-                            <option {{ (setting_item_with_lang('hotel_layout_map_option',request()->query('lang')) ?? '') == 'map_left' ? 'selected' : '' }} value="map_left">{{__('Map Left')}}</option>
-                            <option {{ (setting_item_with_lang('hotel_layout_map_option',request()->query('lang')) ?? '') == 'map_right' ? 'selected' : ''  }} value="map_right">{{__("Map Right")}}</option>
-                        </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" >{{__("Location Search Style")}}</label>
+                            <div class="form-controls">
+                                <select name="hotel_location_search_style" class="form-control">
+                                    <option {{ ($settings['hotel_location_search_style'] ?? '') == 'normal' ? 'selected' : ''  }}      value="normal">{{__("Normal")}}</option>
+                                    <option {{ ($settings['hotel_location_search_style'] ?? '') == 'autocomplete' ? 'selected' : '' }} value="autocomplete">{{__('Autocomplete from locations')}}</option>
+                                    <option {{ ($settings['hotel_location_search_style'] ?? '') == 'autocompletePlace' ? 'selected' : '' }} value="autocompletePlace">{{__('Autocomplete from Gmap Place')}}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                @if(is_default_lang())
-                <div class="form-group">
-                    <label class="" >{{__("Limit item per Page")}}</label>
-                    <div class="form-controls">
-                        <input type="number" min="1" name="hotel_page_limit_item" placeholder="{{ __("Default: 9") }}" value="{{setting_item_with_lang('hotel_page_limit_item',request()->query('lang'), 9)}}" class="form-control">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="" >{{__("Limit item per Page")}}</label>
+                            <div class="form-controls">
+                                <input type="number" min="1" name="hotel_page_limit_item" placeholder="{{ __("Default: 9") }}" value="{{setting_item_with_lang('hotel_page_limit_item',request()->query('lang'), 9)}}" class="form-control">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -80,16 +85,38 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="" >{{__("Location Search Style")}}</label>
+                    <label class="" >{{__("Layout Map Option")}}</label>
                     <div class="form-controls">
-                        <select name="hotel_location_search_style" class="form-control">
-                            <option {{ ($settings['hotel_location_search_style'] ?? '') == 'normal' ? 'selected' : ''  }}      value="normal">{{__("Normal")}}</option>
-                            <option {{ ($settings['hotel_location_search_style'] ?? '') == 'autocomplete' ? 'selected' : '' }} value="autocomplete">{{__('Autocomplete from locations')}}</option>
-                            <option {{ ($settings['hotel_location_search_style'] ?? '') == 'autocompletePlace' ? 'selected' : '' }} value="autocompletePlace">{{__('Autocomplete from Gmap Place')}}</option>
+                        <select name="hotel_layout_map_option" class="form-control">
+                            <option {{ (setting_item_with_lang('hotel_layout_map_option',request()->query('lang')) ?? '') == 'map_left' ? 'selected' : '' }} value="map_left">{{__('Map Left')}}</option>
+                            <option {{ (setting_item_with_lang('hotel_layout_map_option',request()->query('lang')) ?? '') == 'map_right' ? 'selected' : ''  }} value="map_right">{{__("Map Right")}}</option>
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>{{__("Map Lat Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="hotel_map_lat_default" value="{{$settings['hotel_map_lat_default'] ?? ''}}" class="form-control" placeholder="21.030513">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>{{__("Map Lng Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="hotel_map_lng_default" value="{{$settings['hotel_map_lng_default'] ?? ''}}" class="form-control" placeholder="105.840565">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>{{__("Map Zoom Default")}}</label>
+                        <div class="form-controls">
+                            <input type="text" name="hotel_map_zoom_default" value="{{$settings['hotel_map_zoom_default'] ?? ''}}" class="form-control" placeholder="13">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1">
+                        <i> {{ __('Get lat - lng in here') }} <a href="https://www.latlong.net" target="_blank">https://www.latlong.net</a></i>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
                     <label class="" >{{__("Icon Marker in Map")}}</label>
                     <div class="form-controls form-group-image">
                         {!! \Modules\Media\Helpers\FileHelper::fieldUpload('hotel_icon_marker_map',$settings['hotel_icon_marker_map'] ?? "") !!}
@@ -200,7 +227,7 @@
                         </div>
                     </div>
                     <div class="form-group" data-condition="hotel_enable_review:is(1),hotel_enable_review_after_booking:is(1)">
-                        <label class="" >{{__("Allow Review after making Completed Booking?")}}</label>
+                        <label>{{__("Allow review after making Completed Booking?")}}</label>
                         <div class="form-controls">
                             @php
                                 $status = config('booking.statuses');
@@ -214,6 +241,7 @@
                                 @endforeach
                             </div>
                             <small class="form-text text-muted">{{__("Pick to the Booking Status, that allows reviews after booking")}}</small>
+                            <small class="form-text text-muted">{{__("Leave blank if you allow writing the review with all booking status")}}</small>
                         </div>
                     </div>
                     <div class="form-group" data-condition="hotel_enable_review:is(1)">

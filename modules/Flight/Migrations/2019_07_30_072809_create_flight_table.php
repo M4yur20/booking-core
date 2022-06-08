@@ -75,14 +75,10 @@
                 $blueprint->dateTime('arrival_time')->nullable();
                 $blueprint->float('duration')->nullable();
                 $blueprint->decimal('min_price', 12, 2)->nullable();
-                $blueprint->unsignedBigInteger('airport_to')->nullable();
-                $blueprint->unsignedBigInteger('airport_from')->nullable();
-                $blueprint->unsignedBigInteger('airline_id')->nullable();
+                $blueprint->integer('airport_to')->nullable();
+                $blueprint->integer('airport_from')->nullable();
+                $blueprint->integer('airline_id')->nullable();
                 $blueprint->string('status', 50)->nullable();
-
-                $blueprint->foreign('airport_to')->references('id')->on(Airport::getTableName());
-                $blueprint->foreign('airport_from')->references('id')->on(Airport::getTableName());
-                $blueprint->foreign('airline_id')->references('id')->on(Airline::getTableName());
 
                 $blueprint->bigInteger('create_user')->nullable();
                 $blueprint->bigInteger('update_user')->nullable();
@@ -94,14 +90,12 @@
                 $blueprint->bigIncrements('id');
                 $blueprint->decimal('price', 12, 2)->nullable();
                 $blueprint->integer('max_passengers')->nullable();
-                $blueprint->unsignedBigInteger('flight_id')->nullable();
+                $blueprint->integer('flight_id')->nullable();
                 $blueprint->string('seat_type')->nullable();
                 $blueprint->string('person')->nullable();
                 $blueprint->integer('baggage_check_in')->nullable();
                 $blueprint->integer('baggage_cabin')->nullable();
 
-                $blueprint->foreign('flight_id')->references('id')->on(Flight::getTableName());
-                $blueprint->foreign('seat_type')->references('code')->on(SeatType::getTableName());
 
                 $blueprint->bigInteger('create_user')->nullable();
                 $blueprint->bigInteger('update_user')->nullable();
@@ -112,9 +106,9 @@
                 $blueprint->engine = 'InnoDB';
 
                 $blueprint->bigIncrements('id');
-                $blueprint->unsignedBigInteger('flight_id')->nullable();
-                $blueprint->unsignedBigInteger('flight_seat_id')->nullable();
-                $blueprint->unsignedBigInteger('booking_id')->nullable();
+                $blueprint->integer('flight_id')->nullable();
+                $blueprint->integer('flight_seat_id')->nullable();
+                $blueprint->integer('booking_id')->nullable();
                 $blueprint->string('seat_type')->nullable();
                 $blueprint->string('email')->nullable();
                 $blueprint->string('first_name')->nullable();
@@ -124,9 +118,7 @@
                 $blueprint->decimal('price', 12, 2)->nullable();
                 $blueprint->string('id_card')->nullable();
 
-                $blueprint->foreign('flight_id')->references('id')->on(Flight::getTableName());
-                $blueprint->foreign('flight_seat_id')->references('id')->on(FlightSeat::getTableName());
-                $blueprint->foreign('seat_type')->references('code')->on(SeatType::getTableName());
+
                 $blueprint->bigInteger('create_user')->nullable();
                 $blueprint->bigInteger('update_user')->nullable();
                 $blueprint->timestamps();

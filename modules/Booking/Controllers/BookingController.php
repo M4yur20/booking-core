@@ -60,7 +60,7 @@ class BookingController extends \App\Http\Controllers\Controller
 
         $booking = $this->bookingInst;
 
-        if($booking->status != 'draft'){
+        if ( !in_array($booking->status , ['draft','unpaid'])) {
             return redirect('/');
         }
 
@@ -97,7 +97,7 @@ class BookingController extends \App\Http\Controllers\Controller
                 'redirect' => url('/')
             ];
         }
-        if ($booking->status != 'draft') {
+        if ( !in_array($booking->status , ['draft','unpaid'])) {
             $data = [
                 'error'    => true,
                 'redirect' => url('/')
@@ -150,7 +150,7 @@ class BookingController extends \App\Http\Controllers\Controller
 
         $booking = $this->bookingInst;
 
-        if ($booking->status != 'draft') {
+        if ( !in_array($booking->status , ['draft','unpaid'])) {
             return $this->sendError('',[
                 'url'=>$booking->getDetailUrl()
             ]);
@@ -326,6 +326,11 @@ class BookingController extends \App\Http\Controllers\Controller
             }else{
                 $booking->status = $booking::PAID;
             }
+
+            if(!empty($booking->coupon_amount) and $booking->coupon_amount > 0 and $booking->total == 0){
+                $booking->status = $booking::PAID;
+            }
+
             $booking->save();
             event(new BookingCreatedEvent($booking));
             return $this->sendSuccess( [
@@ -449,8 +454,11 @@ class BookingController extends \App\Http\Controllers\Controller
         }
         return view('Booking::frontend/detail', $data);
     }
-	public function exportIcal($service_type = 'tour', $id)
+	public function exportIcal($service_type, $id)
 	{
+	    if(empty($service_type) or empty($id)){
+            return $this->sendError(__('Service not found'));
+        }
 		\Debugbar::disable();
 		$allServices = get_bookable_services();
 		$allServices['room']='Modules\Hotel\Models\HotelRoom';

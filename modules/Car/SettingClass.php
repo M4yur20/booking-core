@@ -50,6 +50,10 @@ class SettingClass extends BaseSettingsClass
 
                     'car_layout_map_option',
                     'car_icon_marker_map',
+
+                    'car_map_lat_default',
+                    'car_map_lng_default',
+                    'car_map_zoom_default',
                 ],
                 'html_keys'=>[
 

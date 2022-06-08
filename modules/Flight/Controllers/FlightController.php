@@ -61,10 +61,10 @@ class FlightController extends Controller
         $data = [
             'rows'               => $list,
             'list_location'      => $this->locationClass::where('status', 'publish')->limit($limit_location)->with(['translations'])->get()->toTree(),
-            'seatType'           =>SeatType::get(),
+            'seatType'           => SeatType::get(),
             'flight_min_max_price' => $this->flightClass::getMinMaxPrice(),
             'markers'            => $markers,
-            "blank"              => 1,
+            "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->flightClass::getSeoMetaForPageList()
         ];
         $layout = setting_item("flight_layout_search", 'normal');

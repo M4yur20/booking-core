@@ -364,42 +364,17 @@ class Tour extends Bookable
         }
         //Buyer Fees for Admin
         $total_before_fees = $total;
-        $list_buyer_fees = setting_item('tour_booking_buyer_fees');
         $total_buyer_fee = 0;
-        if (!empty($list_buyer_fees)) {
-            $lists = json_decode($list_buyer_fees, true);
-            foreach ($lists as $item) {
-                //for Fixed
-                $fee_price = $item['price'];
-                // for Percent
-                if (!empty($item['unit']) and $item['unit'] == "percent") {
-                    $fee_price = ($total_before_fees / 100) * $item['price'];
-                }
-                if (!empty($item['per_person']) and $item['per_person'] == "on") {
-                    $total_buyer_fee += $fee_price * $total_guests;
-                } else {
-                    $total_buyer_fee += $fee_price;
-                }
-            }
+        if (!empty($list_buyer_fees = setting_item('tour_booking_buyer_fees'))) {
+            $list_fees = json_decode($list_buyer_fees, true);
+            $total_buyer_fee = $this->calculateServiceFees($list_fees , $total_before_fees , $total_guests);
             $total += $total_buyer_fee;
         }
 
         //Service Fees for Vendor
         $total_service_fee = 0;
         if(!empty($this->enable_service_fee) and !empty($list_service_fee = $this->service_fee)){
-            foreach ($list_service_fee as $item) {
-                //for Fixed
-                $serice_fee_price = $item['price'];
-                // for Percent
-                if (!empty($item['unit']) and $item['unit'] == "percent") {
-                    $serice_fee_price = ($total_before_fees / 100) * $item['price'];
-                }
-                if (!empty($item['per_person']) and $item['per_person'] == "on") {
-                    $total_service_fee += $serice_fee_price * $total_guests;
-                } else {
-                    $total_service_fee += $serice_fee_price;
-                }
-            }
+            $total_service_fee = $this->calculateServiceFees($list_service_fee , $total_before_fees , $total_guests);
             $total += $total_service_fee;
         }
 
@@ -419,6 +394,7 @@ class Tour extends Bookable
         $booking->vendor_service_fee = $list_service_fee ?? '';
         $booking->buyer_fees = $list_buyer_fees ?? '';
         $booking->total_before_fees = $total_before_fees;
+        $booking->total_before_discount = $total_before_fees;
 
         $booking->calculateCommission();
         if ($this->isDepositEnable()) {
@@ -732,31 +708,22 @@ class Tour extends Bookable
         return setting_item("tour_review_approved", 0);
     }
 
-    public function check_enable_review_after_booking()
-    {
-        $option = setting_item("tour_enable_review_after_booking", 0);
-        if ($option) {
-            $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id(), false, $this->type) ?? 0;
-            $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id()) ?? 0;
-            if ($number_review >= $number_booking) {
-                return false;
-            }
-        }
-        return true;
+    public function review_after_booking(){
+        return setting_item("tour_enable_review_after_booking", 0);
     }
 
-    public function check_allow_review_after_making_completed_booking()
+    public function count_remain_review()
     {
+        $status_making_completed_booking = [];
         $options = setting_item("tour_allow_review_after_making_completed_booking", false);
         if (!empty($options)) {
-            $status = json_decode($options);
-            $booking = $this->bookingClass::select("status")->where("object_id", $this->id)->where("object_model", $this->type)->where("customer_id", Auth::id())->orderBy("id", "desc")->first();
-            $booking_status = $booking->status ?? false;
-            if (!in_array($booking_status, $status)) {
-                return false;
-            }
+            $status_making_completed_booking = json_decode($options);
         }
-        return true;
+        $number_review = $this->reviewClass::countReviewByServiceID($this->id, Auth::id(), false, $this->type) ?? 0;
+        $number_booking = $this->bookingClass::countBookingByServiceID($this->id, Auth::id(),$status_making_completed_booking) ?? 0;
+        $number = $number_booking - $number_review;
+        if($number < 0) $number = 0;
+        return $number;
     }
 
     public static function getReviewStats()
@@ -1019,7 +986,7 @@ class Tour extends Bookable
                 $pri_to
             ]);
         }
-        if (!empty($category_ids = $request->query('cat_id'))) {
+        if (!empty($category_ids = $request->query('cat_id')) and !empty($category_ids[0])) {
             if (!is_array($category_ids))
                 $category_ids = [$category_ids];
             $list_cat = TourCategory::whereIn('id', $category_ids)->where("status", "publish")->get();
@@ -1038,7 +1005,7 @@ class Tour extends Bookable
             }
         }
         $terms = $request->query('terms');
-        if (is_array($terms) && !empty($terms)) {
+        if (is_array($terms) and !empty($terms = array_filter($terms))) {
             $model_Tour->join('bravo_tour_term as tt', 'tt.tour_id', "bravo_tours.id")->whereIn('tt.term_id', $terms);
         }
         $review_scores = $request->query('review_score');
@@ -1195,5 +1162,28 @@ class Tour extends Bookable
                 "data" => Attributes::getAllAttributesForApi("tour")
             ]
         ];
+    }
+
+    static public function getFormSearch()
+    {
+        $search_fields = setting_item_array('tour_search_fields');
+        $search_fields = array_values(\Illuminate\Support\Arr::sort($search_fields, function ($value) {
+            return $value['position'] ?? 0;
+        }));
+        foreach ( $search_fields as &$item){
+            if($item['field'] == 'attr' and !empty($item['attr']) ){
+                $attr = Attributes::find($item['attr']);
+                $item['attr_title'] = $attr->translateOrOrigin(app()->getLocale())->name;
+                foreach($attr->terms as $term)
+                {
+                    $translate = $term->translateOrOrigin(app()->getLocale());
+                    $item['terms'][] =  [
+                        'id' => $term->id,
+                        'title' => $translate->name,
+                    ];
+                }
+            }
+        }
+        return $search_fields;
     }
 }

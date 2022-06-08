@@ -71,8 +71,6 @@ class HotelRoom extends Bookable
         $tmp_night = 0;
         $period = periodDate($filters['start_date'],$filters['end_date'],false);
         foreach ($period as $dt){
-//        for($i = strtotime($filters['start_date']); $i < strtotime($filters['end_date']); $i+= DAY_IN_SECONDS)
-//        {
             $allDates[$dt->format('Y-m-d')] = [
                 'number'=>$this->number,
                 'price'=>$this->price
@@ -101,8 +99,6 @@ class HotelRoom extends Bookable
                 $period = periodDate($roomBooking->start_date,$roomBooking->end_date,false);
                 foreach ($period as $dt){
                     $date = $dt->format('Y-m-d');
-//                for($i = strtotime($roomBooking->start_date); $i <= strtotime($roomBooking->end_date); $i+= DAY_IN_SECONDS)
-//                {
                     if(!array_key_exists($date,$allDates)) continue;
                     $allDates[$date]['number'] -= $roomBooking->number;
                     if($allDates[$date]['number'] <= 0){
@@ -167,7 +163,11 @@ class HotelRoom extends Bookable
 
     public function getBookingsInRange($from, $to)
     {
-       return $this->roomBookingClass::query()->where('room_id',$this->id)->active()->inRange($from,$to)->get(['bravo_hotel_room_bookings.*']);
+       return $this->roomBookingClass::query()
+           ->where('bravo_hotel_room_bookings.room_id',$this->id)
+           ->active()
+           ->inRange($from,$to)
+           ->get(['bravo_hotel_room_bookings.*']);
     }
 
 

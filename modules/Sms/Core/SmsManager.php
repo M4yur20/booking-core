@@ -20,18 +20,14 @@ class SmsManager extends Manager
 	    \config()->set('sms.nexmo.key',setting_item('sms_nexmo_api_key',\config('sms.nexmo.key')));
 	    \config()->set('sms.nexmo.secret',setting_item('sms_nexmo_api_secret',\config('sms.nexmo.secret')));
 	    \config()->set('sms.nexmo.from',setting_item('sms_nexmo_api_from',\config('sms.nexmo.from')));
-        return new NexmoDriver(
-            $this->app['config']['sms.nexmo']
-        );
+        return new NexmoDriver(config('sms.nexmo'));
     }
 	public function createTwilioDriver()
 	{
 		\config()->set('sms.twilio.from',setting_item('sms_twilio_api_from',\config('sms.twilio.from')));
 		\config()->set('sms.twilio.sid',setting_item('sms_twilio_account_sid',\config('sms.twilio.sid')));
 		\config()->set('sms.twilio.token',setting_item('sms_twilio_account_token',\config('sms.twilio.token')));
-		return new TwilioDriver(
-			$this->app['config']['sms.twilio']
-		);
+		return new TwilioDriver(config('sms.twilio'));
 	}
 	public function createLogDriver()
 	{
@@ -55,6 +51,6 @@ class SmsManager extends Manager
     {
 	    $channel = setting_item('sms_driver');
 	    Config::set('sms.default', $channel);
-	    return $this->app['config']['sms.default'] ?? '';
+	    return config('sms.default','');
     }
 }

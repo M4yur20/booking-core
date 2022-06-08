@@ -66,6 +66,7 @@ class ModuleProvider extends ModuleServiceProvider
 
     public static function getBookableServices()
     {
+        if(!Flight::isEnable()) return [];
         return [
             'flight'=>Flight::class
         ];

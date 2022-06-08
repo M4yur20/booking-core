@@ -10,7 +10,10 @@
     </div>
     <div class="g-items">
         @if(!empty($translation->itinerary))
+
             @php if(!is_array($translation->itinerary)) $translation->itinerary = json_decode($translation->itinerary); @endphp
+
+
             @foreach($translation->itinerary as $key=>$itinerary)
                 <div class="item" data-number="{{$key}}">
                     <div class="row">

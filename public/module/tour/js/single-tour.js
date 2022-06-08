@@ -92,8 +92,9 @@
 
                     for (var ix in me.extra_price) {
                         var item = me.extra_price[ix];
+                        if(!item.price) continue;
                         var type_total = 0;
-                        if (item.enable === true) {
+                        if (item.enable == 1) {
                             switch (item.type) {
                                 case "one_time":
                                     type_total += parseFloat(item.price);
@@ -121,6 +122,8 @@
                     var total_fee = 0;
                     for (var ix in me.buyer_fees) {
                         var item = me.buyer_fees[ix];
+
+                        if(!item.price) continue;
 
                         //for Fixed
                         var fee_price = parseFloat(item.price);
@@ -203,11 +206,6 @@
         },
         mounted(){
             var me = this;
-            /*$(".bravo_tour_book").sticky({
-                topSpacing:30,
-                bottomSpacing:$(document).height() - $('.end_tour_sticky').offset().top + 40
-            });*/
-
             var options = {
                 singleDatePicker: true,
                 showCalendar: false,

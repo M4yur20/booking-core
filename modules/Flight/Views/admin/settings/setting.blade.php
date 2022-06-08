@@ -167,7 +167,7 @@
                         </div>
                     </div>
                     <div class="form-group" data-condition="flight_enable_review:is(1),flight_enable_review_after_booking:is(1)">
-                        <label class="" >{{__("Allow Review after making Completed Booking?")}}</label>
+                        <label>{{__("Allow review after making Completed Booking?")}}</label>
                         <div class="form-controls">
                             @php
                                 $status = config('booking.statuses');
@@ -181,6 +181,7 @@
                                 @endforeach
                             </div>
                             <small class="form-text text-muted">{{__("Pick to the Booking Status, that allows reviews after booking")}}</small>
+                            <small class="form-text text-muted">{{__("Leave blank if you allow writing the review with all booking status")}}</small>
                         </div>
                     </div>
                     <div class="form-group" data-condition="flight_enable_review:is(1)">

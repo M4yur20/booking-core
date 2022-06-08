@@ -20,4 +20,16 @@ class ModuleProvider extends ModuleServiceProvider
         $this->app->register(RouterServiceProvider::class);
     }
 
+    public static function getAdminMenu()
+    {
+        return [
+            'review'=>[
+                "position"=>55,
+                'url'   => 'admin/module/review',
+                'title' => __("Reviews"),
+                'icon'  => 'icon ion-ios-text',
+                'permission' => 'review_manage_others',
+            ],
+        ];
+    }
 }

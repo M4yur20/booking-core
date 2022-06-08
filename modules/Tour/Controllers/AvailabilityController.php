@@ -228,8 +228,7 @@ class AvailabilityController extends FrontendController
         $bookings = $this->bookingClass::getBookingInRanges($tour->id, $tour->type, $request->query('start'), $request->query('end'));
         if (!empty($bookings)) {
             foreach ($bookings as $booking) {
-//                for ($i = strtotime($booking->start_date); $i <= strtotime($booking->end_date); $i += DAY_IN_SECONDS) {
-                $period = periodDate($booking->start_date,$booking->end_date);
+                $period = periodDate($booking->start_date,$booking->end_date,false);
                 foreach ($period as $dt){
                     $i = $dt->getTimestamp();
                     if (isset($allDates[date('Y-m-d', $i)])) {

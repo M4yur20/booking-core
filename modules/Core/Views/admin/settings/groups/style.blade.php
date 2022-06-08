@@ -58,6 +58,30 @@
                 </div>
             </div>
         </div>
+
+        <div class="panel">
+            <div class="panel-title"><strong>{{__('H1,H2,H3 Options')}}</strong></div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label>{{__("H1 Font Family")}}</label>
+                    <div class="form-controls">
+                        <input placeholder='"Poppins"' type="text" name="style_h1_font_family" value="{{ setting_item_with_lang('style_h1_font_family',request()->query('lang')) }}" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{__("H2 Font Family")}}</label>
+                    <div class="form-controls">
+                        <input placeholder='"Poppins"' type="text" name="style_h2_font_family" value="{{ setting_item_with_lang('style_h2_font_family',request()->query('lang')) }}" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{__("H3 Font Family")}}</label>
+                    <div class="form-controls">
+                        <input placeholder='"Poppins"' type="text" name="style_h3_font_family" value="{{ setting_item_with_lang('style_h3_font_family',request()->query('lang')) }}" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @if(is_default_lang())

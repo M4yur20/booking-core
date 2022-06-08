@@ -119,7 +119,6 @@
                             <div class="form-group">
                                 <label>{{__('Status')}}</label>
                                 <select required class="custom-select" name="status">
-                                    <option value="">{{ __('-- Select --')}}</option>
                                     <option @if(old('status',$row->status) =='publish') selected @endif value="publish">{{ __('Publish')}}</option>
                                     <option @if(old('status',$row->status) =='blocked') selected @endif value="blocked">{{ __('Blocked')}}</option>
                                 </select>
@@ -127,7 +126,6 @@
                             <div class="form-group">
                                 <label>{{__('Role')}}</label>
                                 <select required class="custom-select" name="role_id">
-                                    <option value="">{{ __('-- Select --')}}</option>
                                     @foreach($roles as $role)
                                         <option value="{{$role->id}}" @if(!old('role_id') && $row->hasRole($role)) selected @elseif(old('role_id')  == $role->id ) selected @endif >{{ucfirst($role->name)}}</option>
                                     @endforeach

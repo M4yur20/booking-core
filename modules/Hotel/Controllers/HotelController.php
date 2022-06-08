@@ -62,7 +62,7 @@ class HotelController extends Controller
             'list_location'      => $this->locationClass::where('status', 'publish')->limit($limit_location)->with(['translations'])->get()->toTree(),
             'hotel_min_max_price' => $this->hotelClass::getMinMaxPrice(),
             'markers'            => $markers,
-            "blank"              => 1,
+            "blank" => setting_item('search_open_tab') == "current_tab" ? 0 : 1 ,
             "seo_meta"           => $this->hotelClass::getSeoMetaForPageList()
         ];
         $layout = setting_item("hotel_layout_search", 'normal');

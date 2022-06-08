@@ -7,6 +7,8 @@ Route::post('/store/{id}','EventController@store')->name('event.admin.store');
 Route::post('/bulkEdit','EventController@bulkEdit')->name('event.admin.bulkEdit');
 Route::get('/recovery','EventController@recovery')->name('event.admin.recovery');
 Route::get('/getForSelect2','EventController@getForSelect2')->name('event.admin.getForSelect2');
+Route::get('/getForSelect2','EventController@getForSelect2')->name('event.admin.getForSelect2');
+
 
 Route::group(['prefix'=>'attribute'],function (){
     Route::get('/','AttributeController@index')->name('event.admin.attribute.index');
